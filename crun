@@ -1,5 +1,0 @@
-#!/bin/bash
-echo "";echo "";echo "";echo "";echo "";echo ""
-g++ -o $1 $1.cpp
-./$1
-echo "";echo ""
