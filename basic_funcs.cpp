@@ -18,7 +18,7 @@ std::vector<float> rand_direction() {
 	// returns vector of unit length and random direction
 	std::random_device rd;
 	float rad = rand_float(0, 360, rd())*(M_PI/180);
-	std::vector<float> direction = {cos(rad), -sin(rad)};
+	std::vector<float> direction = {static_cast<float>(cos(rad)), static_cast<float>(-sin(rad))};
 	return direction;
 }
 std::vector<float> rand_vector(int from, int to) {
