@@ -13,11 +13,11 @@ void new_animal(int &id, std::string species, std::vector<Animal*> &animal_list)
 	std::string species2("prey");
 
 	if (species.compare(species1) == 0) {
-		std::cout << "New Predator..." << std::endl;
+		//std::cout << "New Predator..." << std::endl;
 		Predator* animal = new Predator(id);
 		animal_list.push_back(animal);
 	} else if (species.compare(species2) == 0) {
-		std::cout << "New Prey..." << std::endl;
+		//std::cout << "New Prey..." << std::endl;
 		Prey* animal = new Prey(id);
 		animal_list.push_back(animal);
 	}
@@ -40,3 +40,4 @@ void destroy_animal_list(std::vector<Animal*> &animal_list) {
 	}
 	animal_list.clear();
 }
+

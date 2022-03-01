@@ -1,3 +1,13 @@
+/*
+ *	Breaks when:				decreasing id
+ *	13 (prey) munched!				|
+ *	12 (prey) munched!				v
+ *	Segmentation fault (core dumped)
+ *
+ *	Fix:
+ *	Just store ids in kill_list?
+ */
+
 #include "includes.h"
 #include "animal.h"
 #include "predator.h"
@@ -39,12 +49,16 @@ int main() {
 
 	// main simulation loop
 	for (int t=0; t<TIMESTEPS; t++) {
-		std::cout << "Timestep " << t << std::endl;
+		std::cout << "Timestep: " << t << std::endl;
+		std::cout << "Animals: " << animal_list.size() << std::endl;
 
+		// reset kill counter
 		int kill_count = 0;
 
 		// calculation loop
 		for (size_t a=0; a<animal_list.size(); a++) {
+
+			// will the animal die this timestep?
 			if (animal_list[a]->age >= MAX_AGE) {
 				kill_list[kill_count] = a;
 				kill_count++;
@@ -55,22 +69,66 @@ int main() {
 				continue;
 			}
 
+			// interactions with other animals
 			for (size_t b=0; b<animal_list.size(); b++) {
-				if (animal_list[b]->type == animal_list[a]->type && animal_list[b]->id != animal_list[a]->id) {
 
-					// breeding
-					if (scalar_difference(animal_list[a]->pos, animal_list[b]->pos) < BREEDING_DISTANCE) {
-						if (animal_list[a]->preg_status == 0) {
-							animal_list[a]->preg_status = PREGNANCY_PERIOD;
-						} else if (animal_list[a]->preg_status == 1) {
-							if (animal_list[a]->type == "predator") {
-								birth_list.push_back("predator");
-							} else if (animal_list[a]->type == "prey") {
-								birth_list.push_back("prey");
+				if (animal_list[b]->id != animal_list[a]->id) {
+					// if ids are different
+
+					std::string type_a = animal_list[a]->type;
+					std::string type_b = animal_list[b]->type;
+
+
+
+					if (type_a == type_b) {
+						// if animals are the same species
+						if (scalar_difference(animal_list[a]->pos, animal_list[b]->pos) < BREEDING_DISTANCE) {
+							// breeding
+							if (animal_list[a]->preg_status == 0) {
+								animal_list[a]->preg_status = PREGNANCY_PERIOD;
+							} else if (animal_list[a]->preg_status == 1) {
+								if (animal_list[a]->type == "predator") {
+									birth_list.push_back("predator");
+								} else if (animal_list[a]->type == "prey") {
+									birth_list.push_back("prey");
+								}
+							}
+						}
+
+
+
+					} else if (type_a == "predator") {
+						// predator-prey interactions
+						if (scalar_difference(animal_list[a]->pos, animal_list[b]->pos) < MUNCHING_DISTANCE) {
+							// predator munches prey
+
+							// add to predator's hunger
+
+
+
+							bool in_kill_list = false;
+							for (int i = 0; i < kill_count; i++) {
+								if (kill_list[i]==b) {
+									in_kill_list = true;
+								}
+							}
+							if (!in_kill_list) {
+								// add munched prey to kill list if not already on it
+								kill_list[kill_count] = b;
+								kill_count++;
+								std::cout << animal_list[b]->id << " (" << animal_list[b]->type << ")" << " munched!" << std::endl;
 							}
 						}
 					}
+
+
+
+
+
 				}
+
+
+
 			}
 		}
 
