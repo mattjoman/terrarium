@@ -45,28 +45,26 @@ void destroy_animal_list(std::vector<Animal*> &animal_list) {
 
 
 
-void new_animal(int &id, int &n_living, std::string species, Animal* animal_list[]) {
+void new_animal(int &id, int index, std::string species, Animal* animal_list[]) {
 	std::string species1("predator");
 	std::string species2("prey");
 
 	if (species.compare(species1) == 0) {
 		//std::cout << "New Predator..." << std::endl;
 		Predator* animal = new Predator(id);
-		animal_list[n_living] = animal;
+		animal_list[index] = animal;
 	} else if (species.compare(species2) == 0) {
 		//std::cout << "New Prey..." << std::endl;
 		Prey* animal = new Prey(id);
-		animal_list[n_living] = animal;
+		animal_list[index] = animal;
 	}
 	id++;
-	n_living++;
 	return;
 }
 
 
-void erase_animal(int index, Animal* animal_list[], int &n_living) {
+void erase_animal(int index, Animal* animal_list[]) {
 	delete animal_list[index]; // delete animal object
-	n_living--;
 	return;
 }
 

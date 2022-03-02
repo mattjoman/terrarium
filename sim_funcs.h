@@ -15,8 +15,8 @@ void erase_animal(std::vector<Animal*> &animal_list, std::vector<Animal*>::itera
 void destroy_animal_list(std::vector<Animal*> &animal_list);
 */
 
-void new_animal(int &id, int &n_living, std::string species, Animal* animal_list[]);
+void new_animal(int &id, int index, std::string species, Animal* animal_list[]);
 
-void erase_animal(int &n_living, Animal* animal_list[], int index);
+void erase_animal(int index, Animal* animal_list[]);
 
 //void destroy_animal_list(std::vector<Animal*> &animal_list);

@@ -1,11 +1,12 @@
 /*
- *	Breaks when:				decreasing id
- *	13 (prey) munched!				|
- *	12 (prey) munched!				v
- *	Segmentation fault (core dumped)
+ * Sometimes an animal gets
+ * munched before dying of
+ * hunger.
+ * How does this happen?
+ * It causes a seg fault.
  *
- *	Fix:
- *	Just store ids in kill_list?
+ * There are other mysterious
+ * seg faults too.
  */
 
 #include "includes.h"
@@ -36,12 +37,12 @@ int main() {
 	// make initial predators and prey
 	for (int i=0; i<INITIAL_PREDATORS; i++) {
 		new_animal(id, n_living, label1, &animal_list[0]);
+		n_living++;
 	}
 	for (int i=0; i<INITIAL_PREY; i++) {
 		new_animal(id, n_living, label2, &animal_list[0]);
+		n_living++;
 	}
-	std::cout << n_living << std::endl;
-	std::cout << animal_list[0]->id << std::endl;
 	
 
 
@@ -50,19 +51,25 @@ int main() {
 	// main simulation loop
 	for (int t=0; t<TIMESTEPS; t++) {
 
-		// reset kill counter for the timestep
+		std::cout << "----- TIMESTEP " << t << " -----"<< std::endl;
+		std::cout << "Population: " << n_living << std::endl;
+		std::cout << "ID: " << id << std::endl;
+
+		// reset kill and birth counters for the timestep
 		int kill_count = 0;
+		int birth_count = 0;
 
 		// calculation loop
 		for (int a=0; a<n_living; a++) {
 
 			// will the animal die this timestep?
 			if (animal_list[a]->age >= MAX_AGE) {
-				std::cout << "too old" << std::endl;
+				std::cout << animal_list[a]->id << " died of old age" << std::endl;
 				kill_list[kill_count] = a;
 				kill_count++;
 				continue;
 			} else if (animal_list[a]->hunger >= MAX_HUNGER) {
+				std::cout << animal_list[a]->id << " died of hunger" << std::endl;
 				kill_list[kill_count] = a;
 				kill_count++;
 				continue;
@@ -91,6 +98,7 @@ int main() {
 								} else if (animal_list[a]->type == "prey") {
 									birth_list.push_back("prey");
 								}
+								birth_count++;
 							}
 						}
 
@@ -101,21 +109,25 @@ int main() {
 						if (scalar_difference(animal_list[a]->pos, animal_list[b]->pos) < MUNCHING_DISTANCE) {
 							// predator munches prey
 
-							// add to predator's hunger
+							// subtract from animal's hunger and kill the prey predator's hunger
+							if (animal_list[a]->hunger>0) {
 
 
-
-							bool in_kill_list = false;
-							for (int i = 0; i < kill_count; i++) {
-								if (kill_list[i]==b) {
-									in_kill_list = true;
+								// check if prey is in kill list already
+								bool in_kill_list = false;
+								for (int i = 0; i < kill_count; i++) {
+									if (kill_list[i]==b) {
+										in_kill_list = true;
+									}
 								}
-							}
-							if (!in_kill_list) {
-								// add munched prey to kill list if not already on it
-								kill_list[kill_count] = b;
-								kill_count++;
-								std::cout << animal_list[b]->id << " (" << animal_list[b]->type << ")" << " munched!" << std::endl;
+
+								if (!in_kill_list) {
+									// add munched prey to kill list if not already on it
+									kill_list[kill_count] = b;
+									kill_count++;
+									animal_list[a]->hunger--;
+									std::cout << animal_list[b]->id << " got munched!" << std::endl;
+								}
 							}
 						}
 					}
@@ -143,6 +155,7 @@ int main() {
 			}
 		}
 
+		/*
 		// birth loop
 		if (birth_list.size() > 0) {
 			for (size_t a=0; a<birth_list.size(); a++) {
@@ -160,14 +173,51 @@ int main() {
 				erase_animal(animal_list, iter);
 			}
 		}
+		*/
 
-		/*
+		// new birth and death loop
+		std::cout << "Births: " << birth_count << std::endl;
+		std::cout << "Deaths: " << kill_count << std::endl;
+		while (kill_count>0) {
+			// kill animal
+			std::cout << animal_list[kill_list[kill_count-1]]->id << " removed." << std::endl;
+			erase_animal(kill_list[kill_count-1], &animal_list[0]);
+			n_living--;
+			if (birth_count>0) {
+				// fill the hole with new animal
+				new_animal(id, kill_list[kill_count-1], birth_list[birth_count-1], &animal_list[0]);
+				n_living++;
+				birth_count--;
+			} else {
+				// Take the last animal from animal_list
+				// and use it to fill the hole.
+				// The last animal will be at index
+				// n_living (because there is 1 hole).
+				animal_list[kill_list[kill_count-1]] = animal_list[n_living];
+				// No need to change the value at animal_list[n_living]
+				// since it will just get overwritten when new animals
+				// are created.
+			}
+			kill_count--;
+		}
+		while (birth_count>0) {
+			// add new animals to the end of animal_list
+			new_animal(id, n_living, birth_list[birth_count-1], &animal_list[0]);	
+			n_living++;
+			birth_count--;
+		}
+		birth_list.clear();
+
+
+
 		// break simulation loop if all animals are dead
-		if (animal_list.size() == 0) {
+		if (n_living == 0) {
 			std::cout << "all dead!" << std::endl;
+			std::cout << std::endl;
 			break;
 		}
-		*/
+
+		std::cout << std::endl;
 	}
 
 
