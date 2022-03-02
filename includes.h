@@ -8,6 +8,7 @@
 #include <stdlib.h>
 
 #define TIMESTEPS 150 // maximum number of timesteps
+#define MAX_POPULATION 100000 // maximum animals living at once
 #define MAX_DEATHS 10000 // maximum deaths per timestep
 #define MAX_AGE 20 // maximum age of animals
 #define MAX_HUNGER 20 // maximum hunger for animals

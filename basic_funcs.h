@@ -15,3 +15,5 @@ std::vector<float> vector_difference(std::vector<float> v1, std::vector<float> v
 
 float scalar_difference(std::vector<float> v1, std::vector<float> v2);
 
+void sort(int arr[], size_t len);
+

@@ -45,4 +45,24 @@ float scalar_difference(std::vector<float> v1, std::vector<float> v2) {
 	return sqrt(a_sq + b_sq);
 }
 
+void sort(int arr[], size_t len) {
+	int tmp;
+	int is_sorted;
+	while (true) {
+		std::cout << "Once through" << std::endl;
+		is_sorted = 1;
+		for (int i=0; i<len-1; i++) {
+			if (arr[i]>arr[i+1]) {
+				is_sorted = 0;
+				tmp = arr[i];
+				arr[i] = arr[i+1];
+				arr[i+1] = tmp;
+			}
+		}
+		if (is_sorted) {
+			break;
+		}
+	}
+}
+
 

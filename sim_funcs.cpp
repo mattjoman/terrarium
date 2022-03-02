@@ -8,6 +8,7 @@
 #include "prey.h"
 
 
+/*
 void new_animal(int &id, std::string species, std::vector<Animal*> &animal_list) {
 	std::string species1("predator");
 	std::string species2("prey");
@@ -40,4 +41,42 @@ void destroy_animal_list(std::vector<Animal*> &animal_list) {
 	}
 	animal_list.clear();
 }
+*/
 
+
+
+void new_animal(int &id, int &n_living, std::string species, Animal* animal_list[]) {
+	std::string species1("predator");
+	std::string species2("prey");
+
+	if (species.compare(species1) == 0) {
+		//std::cout << "New Predator..." << std::endl;
+		Predator* animal = new Predator(id);
+		animal_list[n_living] = animal;
+	} else if (species.compare(species2) == 0) {
+		//std::cout << "New Prey..." << std::endl;
+		Prey* animal = new Prey(id);
+		animal_list[n_living] = animal;
+	}
+	id++;
+	n_living++;
+	return;
+}
+
+
+void erase_animal(int index, Animal* animal_list[], int &n_living) {
+	delete animal_list[index]; // delete animal object
+	n_living--;
+	return;
+}
+
+/*
+void destroy_animal_list(std::vector<Animal*> &animal_list) {
+	// delete all animals in 'animal_list' and clear the vector
+	// do this at the end of the program
+	for (std::vector<Animal*>::iterator it=animal_list.begin(); it!=animal_list.end(); it++) {
+		delete *it;
+	}
+	animal_list.clear();
+}
+*/

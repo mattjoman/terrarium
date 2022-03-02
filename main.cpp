@@ -21,12 +21,10 @@ int main() {
 
 	// initialising
 	int id = 0; // initial id
-	std::vector<Animal*> animal_list;
-	size_t kill_list[MAX_DEATHS]; // animals to kill this timestep
+	int n_living = 0;
+	Animal* animal_list[MAX_POPULATION];
+	int kill_list[MAX_DEATHS]; // animals to kill this timestep
 	std::vector<std::string> birth_list;
-
-	// declare an iterator variable
-	std::vector<Animal*>::iterator iter;
 
 	// better way of doing this?
 	std::string label1("predator");
@@ -37,11 +35,13 @@ int main() {
 
 	// make initial predators and prey
 	for (int i=0; i<INITIAL_PREDATORS; i++) {
-		new_animal(id, label1, animal_list);
+		new_animal(id, n_living, label1, &animal_list[0]);
 	}
 	for (int i=0; i<INITIAL_PREY; i++) {
-		new_animal(id, label2, animal_list);
+		new_animal(id, n_living, label2, &animal_list[0]);
 	}
+	std::cout << n_living << std::endl;
+	std::cout << animal_list[0]->id << std::endl;
 	
 
 
@@ -49,17 +49,16 @@ int main() {
 
 	// main simulation loop
 	for (int t=0; t<TIMESTEPS; t++) {
-		std::cout << "Timestep: " << t << std::endl;
-		std::cout << "Animals: " << animal_list.size() << std::endl;
 
-		// reset kill counter
+		// reset kill counter for the timestep
 		int kill_count = 0;
 
 		// calculation loop
-		for (size_t a=0; a<animal_list.size(); a++) {
+		for (int a=0; a<n_living; a++) {
 
 			// will the animal die this timestep?
 			if (animal_list[a]->age >= MAX_AGE) {
+				std::cout << "too old" << std::endl;
 				kill_list[kill_count] = a;
 				kill_count++;
 				continue;
@@ -70,7 +69,7 @@ int main() {
 			}
 
 			// interactions with other animals
-			for (size_t b=0; b<animal_list.size(); b++) {
+			for (int b=0; b<n_living; b++) {
 
 				if (animal_list[b]->id != animal_list[a]->id) {
 					// if ids are different
@@ -134,7 +133,7 @@ int main() {
 
 
 		// update loop
-		for (size_t a=0; a<animal_list.size(); a++) {
+		for (int a=0; a<n_living; a++) {
 			animal_list[a]->move();	
 			animal_list[a]->vel = rand_direction();
 			animal_list[a]->age++;
@@ -147,7 +146,7 @@ int main() {
 		// birth loop
 		if (birth_list.size() > 0) {
 			for (size_t a=0; a<birth_list.size(); a++) {
-				new_animal(id, birth_list[a], animal_list);			
+				new_animal(id, n_living, birth_list[a], &animal_list[0]);			
 			}
 			birth_list.clear();
 		}
@@ -156,23 +155,28 @@ int main() {
 		// kill loop
 		if (kill_count > 0) {
 			for (int a=kill_count-1; a>=0; a--) {
-				iter = animal_list.begin() + kill_list[a];
+				//iter = animal_list.begin() + kill_list[a];
+
 				erase_animal(animal_list, iter);
 			}
 		}
 
+		/*
 		// break simulation loop if all animals are dead
 		if (animal_list.size() == 0) {
 			std::cout << "all dead!" << std::endl;
 			break;
 		}
+		*/
 	}
 
 
 
 	
+	/*
 	// cleaning up
 	destroy_animal_list(animal_list);	
+	*/
 
 	return 0;
 }
