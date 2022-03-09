@@ -72,6 +72,7 @@ void erase_animal(int index, Animal* animal_list[])
 	return;
 }
 
+
 bool is_in_kill_list(int element, int kill_list[MAX_DEATHS], int kill_count)
 {
 	// return true if the element is in kill_list
@@ -86,6 +87,7 @@ bool is_in_kill_list(int element, int kill_list[MAX_DEATHS], int kill_count)
 	}
 	return in_kill_list;
 }
+
 
 /*
 void destroy_animal_list(std::vector<Animal*> &animal_list) {

@@ -63,6 +63,7 @@ int main()
 		// calculation loop
 		for (int a=0; a<n_living; a++)
 		{
+
 			// interactions with other animals
 			for (int b=0; b<n_living; b++)
 			{
@@ -81,7 +82,6 @@ int main()
 						// if animals are the same species
 						if (scalar_difference(animal_list[a]->pos, animal_list[b]->pos) < BREEDING_DISTANCE)
 						{
-
 							// breeding
 							if (animal_list[a]->is_pregnant())
 							{
@@ -95,11 +95,7 @@ int main()
 							{
 								animal_list[a]->conceive();
 							}
-
 						}
-
-
-
 					}
 					else if (type_a == "predator")
 					{
@@ -158,10 +154,8 @@ int main()
 
 
 
-		/*
 		std::cout << "Births: " << birth_count << std::endl;
 		std::cout << "Deaths: " << kill_count << std::endl;
-		*/
 
 		// new birth and death loop
 		while (kill_count>0)
