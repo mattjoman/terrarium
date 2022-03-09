@@ -18,7 +18,8 @@
 #include <iostream>
 
 
-int main() {
+int main()
+{
 
 	// initialising
 	int id = 0; // initial id
@@ -35,11 +36,13 @@ int main() {
 
 
 	// make initial predators and prey
-	for (int i=0; i<INITIAL_PREDATORS; i++) {
+	for (int i=0; i<INITIAL_PREDATORS; i++)
+	{
 		new_animal(id, n_living, label1, &animal_list[0]);
 		n_living++;
 	}
-	for (int i=0; i<INITIAL_PREY; i++) {
+	for (int i=0; i<INITIAL_PREY; i++)
+	{
 		new_animal(id, n_living, label2, &animal_list[0]);
 		n_living++;
 	}
@@ -49,7 +52,8 @@ int main() {
 
 
 	// main simulation loop
-	for (int t=0; t<TIMESTEPS; t++) {
+	for (int t=0; t<TIMESTEPS; t++)
+	{
 
 		std::cout << "----- TIMESTEP " << t << " -----"<< std::endl;
 		std::cout << "Population: " << n_living << std::endl;
@@ -59,26 +63,23 @@ int main() {
 		int kill_count = 0;
 		int birth_count = 0;
 
+
+
+
+
+
+
+
+
 		// calculation loop
-		for (int a=0; a<n_living; a++) {
-
-			// will the animal die this timestep?
-			if (animal_list[a]->age >= MAX_AGE) {
-				std::cout << animal_list[a]->id << " died of old age" << std::endl;
-				kill_list[kill_count] = a;
-				kill_count++;
-				continue;
-			} else if (animal_list[a]->hunger >= MAX_HUNGER) {
-				std::cout << animal_list[a]->id << " died of hunger" << std::endl;
-				kill_list[kill_count] = a;
-				kill_count++;
-				continue;
-			}
-
+		for (int a=0; a<n_living; a++)
+		{
 			// interactions with other animals
-			for (int b=0; b<n_living; b++) {
+			for (int b=0; b<n_living; b++)
+			{
 
-				if (animal_list[b]->id != animal_list[a]->id) {
+				if (animal_list[b]->id != animal_list[a]->id)
+				{
 					// if ids are different
 
 					std::string type_a = animal_list[a]->type;
@@ -86,16 +87,22 @@ int main() {
 
 
 
-					if (type_a == type_b) {
+					if (type_a == type_b)
+					{
 						// if animals are the same species
-						if (scalar_difference(animal_list[a]->pos, animal_list[b]->pos) < BREEDING_DISTANCE) {
+						if (scalar_difference(animal_list[a]->pos, animal_list[b]->pos) < BREEDING_DISTANCE)
+						{
 							// breeding
-							if (animal_list[a]->preg_status == 0) {
+							if (animal_list[a]->preg_status == 0)
+							{
 								animal_list[a]->preg_status = PREGNANCY_PERIOD;
-							} else if (animal_list[a]->preg_status == 1) {
-								if (animal_list[a]->type == "predator") {
+							} else if (animal_list[a]->preg_status == 1)
+							{
+								if (animal_list[a]->type == "predator")
+								{
 									birth_list.push_back("predator");
-								} else if (animal_list[a]->type == "prey") {
+								} else if (animal_list[a]->type == "prey")
+								{
 									birth_list.push_back("prey");
 								}
 								birth_count++;
@@ -104,24 +111,30 @@ int main() {
 
 
 
-					} else if (type_a == "predator") {
+					} else if (type_a == "predator")
+					{
 						// predator-prey interactions
-						if (scalar_difference(animal_list[a]->pos, animal_list[b]->pos) < MUNCHING_DISTANCE) {
+						if (scalar_difference(animal_list[a]->pos, animal_list[b]->pos) < MUNCHING_DISTANCE)
+						{
 							// predator munches prey
 
 							// subtract from animal's hunger and kill the prey predator's hunger
-							if (animal_list[a]->hunger>0) {
+							if (animal_list[a]->hunger>0)
+							{
 
 
 								// check if prey is in kill list already
 								bool in_kill_list = false;
-								for (int i = 0; i < kill_count; i++) {
-									if (kill_list[i]==b) {
+								for (int i = 0; i < kill_count; i++)
+								{
+									if (kill_list[i]==b)
+									{
 										in_kill_list = true;
 									}
 								}
 
-								if (!in_kill_list) {
+								if (!in_kill_list)
+								{
 									// add munched prey to kill list if not already on it
 									kill_list[kill_count] = b;
 									kill_count++;
@@ -131,76 +144,111 @@ int main() {
 							}
 						}
 					}
-
-
-
-
-
 				}
+			}
+		} // end of calculation loop
 
 
 
+
+
+
+
+		// add old or starved animals to the kill_list
+		for (int a = 0; a < n_living; a++)
+		{
+			// check if animal is in kill list already
+			bool in_kill_list = false;
+			for (int i = 0; i < kill_count; i++)
+			{
+				if (kill_list[i]==a)
+				{
+					in_kill_list = true;
+				}
+			}
+			if (!in_kill_list)
+			{
+				// will the animal die this timestep?
+				if (animal_list[a]->age >= MAX_AGE)
+				{
+					std::cout << animal_list[a]->id << " died of old age" << std::endl;
+					kill_list[kill_count] = a;
+					kill_count++;
+					//continue;
+				} else if (animal_list[a]->hunger >= MAX_HUNGER)
+				{
+					std::cout << animal_list[a]->id << " died of hunger" << std::endl;
+					kill_list[kill_count] = a;
+					kill_count++;
+					//continue;
+				}
 			}
 		}
 
 
-		// update loop
-		for (int a=0; a<n_living; a++) {
-			animal_list[a]->move();	
-			animal_list[a]->vel = rand_direction();
-			animal_list[a]->age++;
-			animal_list[a]->hunger++;
-			if (animal_list[a]->preg_status > 0) {
-				animal_list[a]->preg_status--;
-			}
-		}
-
-		/*
-		// birth loop
-		if (birth_list.size() > 0) {
-			for (size_t a=0; a<birth_list.size(); a++) {
-				new_animal(id, n_living, birth_list[a], &animal_list[0]);			
-			}
-			birth_list.clear();
-		}
 
 
-		// kill loop
-		if (kill_count > 0) {
-			for (int a=kill_count-1; a>=0; a--) {
-				//iter = animal_list.begin() + kill_list[a];
-
-				erase_animal(animal_list, iter);
-			}
-		}
-		*/
 
 		// new birth and death loop
 		std::cout << "Births: " << birth_count << std::endl;
 		std::cout << "Deaths: " << kill_count << std::endl;
-		while (kill_count>0) {
+		while (kill_count>0)
+		{
 			// kill animal
-			std::cout << animal_list[kill_list[kill_count-1]]->id << " removed." << std::endl;
+
+
+
+
+			std::cout << "kill_list: ";
+			for (int i = 0; i < kill_count; i++)
+			{
+				std::cout << kill_list[i] << " ";
+			}
+			std::cout << std::endl;
+
+			std::cout << "animal_list: ";
+			for (int i = 0; i < n_living; i++)
+			{
+				std::cout << animal_list[i]->id << " ";
+			}
+			std::cout << std::endl;
+			std::cout << std::endl;
+
+
+
+
+			//std::cout << animal_list[kill_list[kill_count-1]]->id << " (animal_list[" << kill_list[kill_count-1] << "]) removed." << std::endl;
+
+			int tmp1 = n_living - 1;
+			int tmp2 = kill_count - 1;
+
 			erase_animal(kill_list[kill_count-1], &animal_list[0]);
 			n_living--;
-			if (birth_count>0) {
+			if (birth_count>0)
+			{
 				// fill the hole with new animal
 				new_animal(id, kill_list[kill_count-1], birth_list[birth_count-1], &animal_list[0]);
 				n_living++;
 				birth_count--;
-			} else {
-				// Take the last animal from animal_list
-				// and use it to fill the hole.
-				// The last animal will be at index
-				// n_living (because there is 1 hole).
+			} else
+			{
 				animal_list[kill_list[kill_count-1]] = animal_list[n_living];
-				// No need to change the value at animal_list[n_living]
-				// since it will just get overwritten when new animals
-				// are created.
+				// if the animal that was just moved in animal_list is in kill_list,
+				// we need to update its corresponding value in kill_list.
+				for (int k = 0; k < kill_count; k++)
+				{
+					// if tmp1 is in kill_list: change it to tmp2.
+					if (kill_list[k] == tmp1)
+					{
+						kill_list[k] = tmp2;
+						break;
+					}
+				}
 			}
 			kill_count--;
 		}
-		while (birth_count>0) {
+		while (birth_count>0)
+		{
 			// add new animals to the end of animal_list
 			new_animal(id, n_living, birth_list[birth_count-1], &animal_list[0]);	
 			n_living++;
@@ -210,8 +258,43 @@ int main() {
 
 
 
+		std::cout << "animal_list: ";
+		for (int i = 0; i < n_living; i++)
+		{
+			std::cout << animal_list[i]->id << " ";
+		}
+		std::cout << std::endl;
+		std::cout << std::endl;
+
+
+
+
+
+
+		// update loop
+		for (int a=0; a<n_living; a++)
+		{
+			animal_list[a]->move();	
+			animal_list[a]->vel = rand_direction();
+			animal_list[a]->age++;
+			animal_list[a]->hunger++;
+			if (animal_list[a]->preg_status > 0)
+			{
+				animal_list[a]->preg_status--;
+			}
+		}
+
+
+
+
+
+
+
+
+
 		// break simulation loop if all animals are dead
-		if (n_living == 0) {
+		if (n_living == 0)
+		{
 			std::cout << "all dead!" << std::endl;
 			std::cout << std::endl;
 			break;
