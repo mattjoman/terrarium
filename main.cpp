@@ -122,18 +122,7 @@ int main()
 							if (animal_list[a]->hunger>0)
 							{
 
-
-								// check if prey is in kill list already
-								bool in_kill_list = false;
-								for (int i = 0; i < kill_count; i++)
-								{
-									if (kill_list[i]==b)
-									{
-										in_kill_list = true;
-									}
-								}
-
-								if (!in_kill_list)
+								if (!is_in_kill_list(b, kill_list, kill_count))
 								{
 									// add munched prey to kill list if not already on it
 									kill_list[kill_count] = b;
@@ -157,16 +146,7 @@ int main()
 		// add old or starved animals to the kill_list
 		for (int a = 0; a < n_living; a++)
 		{
-			// check if animal is in kill list already
-			bool in_kill_list = false;
-			for (int i = 0; i < kill_count; i++)
-			{
-				if (kill_list[i]==a)
-				{
-					in_kill_list = true;
-				}
-			}
-			if (!in_kill_list)
+			if (!is_in_kill_list(a, kill_list, kill_count))
 			{
 				// will the animal die this timestep?
 				if (animal_list[a]->age >= MAX_AGE)
@@ -189,16 +169,18 @@ int main()
 
 
 
-		// new birth and death loop
+
+
+		/*
 		std::cout << "Births: " << birth_count << std::endl;
 		std::cout << "Deaths: " << kill_count << std::endl;
+		*/
+
+		// new birth and death loop
 		while (kill_count>0)
 		{
-			// kill animal
 
-
-
-
+			/*
 			std::cout << "kill_list: ";
 			for (int i = 0; i < kill_count; i++)
 			{
@@ -213,12 +195,9 @@ int main()
 			}
 			std::cout << std::endl;
 			std::cout << std::endl;
+			*/
 
-
-
-
-			//std::cout << animal_list[kill_list[kill_count-1]]->id << " (animal_list[" << kill_list[kill_count-1] << "]) removed." << std::endl;
-
+			// used to keep kill_list correct
 			int tmp1 = n_living - 1;
 			int tmp2 = kill_count - 1;
 
@@ -258,6 +237,7 @@ int main()
 
 
 
+		/*
 		std::cout << "animal_list: ";
 		for (int i = 0; i < n_living; i++)
 		{
@@ -265,6 +245,7 @@ int main()
 		}
 		std::cout << std::endl;
 		std::cout << std::endl;
+		*/
 
 
 
