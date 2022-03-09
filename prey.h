@@ -5,6 +5,7 @@
 
 struct Prey : Animal {
 	Prey(int id);
+	void inc_hunger();
 	void print();
 	~Prey();
 };

@@ -1,14 +1,3 @@
-/*
- * Sometimes an animal gets
- * munched before dying of
- * hunger.
- * How does this happen?
- * It causes a seg fault.
- *
- * There are other mysterious
- * seg faults too.
- */
-
 #include "includes.h"
 #include "animal.h"
 #include "predator.h"
@@ -92,26 +81,27 @@ int main()
 						// if animals are the same species
 						if (scalar_difference(animal_list[a]->pos, animal_list[b]->pos) < BREEDING_DISTANCE)
 						{
+
 							// breeding
-							if (animal_list[a]->preg_status == 0)
+							if (animal_list[a]->is_pregnant())
 							{
-								animal_list[a]->preg_status = PREGNANCY_PERIOD;
-							} else if (animal_list[a]->preg_status == 1)
-							{
-								if (animal_list[a]->type == "predator")
+								if (animal_list[a]->is_due())
 								{
-									birth_list.push_back("predator");
-								} else if (animal_list[a]->type == "prey")
-								{
-									birth_list.push_back("prey");
+									birth_list.push_back(animal_list[a]->type);
+									birth_count++;
 								}
-								birth_count++;
 							}
+							else
+							{
+								animal_list[a]->conceive();
+							}
+
 						}
 
 
 
-					} else if (type_a == "predator")
+					}
+					else if (type_a == "predator")
 					{
 						// predator-prey interactions
 						if (scalar_difference(animal_list[a]->pos, animal_list[b]->pos) < MUNCHING_DISTANCE)
@@ -119,7 +109,7 @@ int main()
 							// predator munches prey
 
 							// subtract from animal's hunger and kill the prey predator's hunger
-							if (animal_list[a]->hunger>0)
+							if (animal_list[a]->is_hungry())
 							{
 
 								if (!is_in_kill_list(b, kill_list, kill_count))
@@ -127,7 +117,7 @@ int main()
 									// add munched prey to kill list if not already on it
 									kill_list[kill_count] = b;
 									kill_count++;
-									animal_list[a]->hunger--;
+									animal_list[a]->eat();
 									std::cout << animal_list[b]->id << " got munched!" << std::endl;
 								}
 							}
@@ -148,19 +138,16 @@ int main()
 		{
 			if (!is_in_kill_list(a, kill_list, kill_count))
 			{
-				// will the animal die this timestep?
 				if (animal_list[a]->age >= MAX_AGE)
 				{
 					std::cout << animal_list[a]->id << " died of old age" << std::endl;
 					kill_list[kill_count] = a;
 					kill_count++;
-					//continue;
 				} else if (animal_list[a]->hunger >= MAX_HUNGER)
 				{
 					std::cout << animal_list[a]->id << " died of hunger" << std::endl;
 					kill_list[kill_count] = a;
 					kill_count++;
-					//continue;
 				}
 			}
 		}
@@ -180,23 +167,6 @@ int main()
 		while (kill_count>0)
 		{
 
-			/*
-			std::cout << "kill_list: ";
-			for (int i = 0; i < kill_count; i++)
-			{
-				std::cout << kill_list[i] << " ";
-			}
-			std::cout << std::endl;
-
-			std::cout << "animal_list: ";
-			for (int i = 0; i < n_living; i++)
-			{
-				std::cout << animal_list[i]->id << " ";
-			}
-			std::cout << std::endl;
-			std::cout << std::endl;
-			*/
-
 			// used to keep kill_list correct
 			int tmp1 = n_living - 1;
 			int tmp2 = kill_count - 1;
@@ -209,7 +179,8 @@ int main()
 				new_animal(id, kill_list[kill_count-1], birth_list[birth_count-1], &animal_list[0]);
 				n_living++;
 				birth_count--;
-			} else
+			}
+			else
 			{
 				animal_list[kill_list[kill_count-1]] = animal_list[n_living];
 				// if the animal that was just moved in animal_list is in kill_list,
@@ -237,32 +208,11 @@ int main()
 
 
 
-		/*
-		std::cout << "animal_list: ";
-		for (int i = 0; i < n_living; i++)
-		{
-			std::cout << animal_list[i]->id << " ";
-		}
-		std::cout << std::endl;
-		std::cout << std::endl;
-		*/
-
-
-
-
-
 
 		// update loop
 		for (int a=0; a<n_living; a++)
 		{
-			animal_list[a]->move();	
-			animal_list[a]->vel = rand_direction();
-			animal_list[a]->age++;
-			animal_list[a]->hunger++;
-			if (animal_list[a]->preg_status > 0)
-			{
-				animal_list[a]->preg_status--;
-			}
+			animal_list[a]->update();
 		}
 
 

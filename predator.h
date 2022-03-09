@@ -4,6 +4,7 @@
 
 struct Predator : Animal {
 	Predator(int id);
+	void inc_hunger();
 	void print();
 	~Predator();
 };
