@@ -2,7 +2,8 @@
 #include "predator.h"
 
 
-Predator::Predator(int id_) : Animal{id_} {
+Predator::Predator(int id_) : Animal{id_}
+{
 	type = "predator";
 }
 
@@ -13,7 +14,8 @@ void Predator::inc_hunger()
 }
 
 
-void Predator::print() {
+void Predator::print()
+{
 	std::cout << "PREDATOR" << std::endl;
 }
 

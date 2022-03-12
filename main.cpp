@@ -63,11 +63,15 @@ int main()
 		// calculation loop
 		for (int a=0; a<n_living; a++)
 		{
+
+
 			if (animal_list[a]->is_due())
 			{
 				birth_list.push_back(animal_list[a]->type);
 				birth_count++;
 			}
+
+
 
 			// interactions with other animals
 			for (int b=0; b<n_living; b++)
@@ -84,6 +88,7 @@ int main()
 
 					if (type_a == type_b)
 					{
+
 						// if animals are the same species
 						if (scalar_difference(animal_list[a]->pos, animal_list[b]->pos) < BREEDING_DISTANCE)
 						{
@@ -94,6 +99,7 @@ int main()
 							}
 						}
 					}
+
 					else if (type_a == "predator")
 					{
 						// predator-prey interactions
