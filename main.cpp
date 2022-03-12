@@ -4,6 +4,7 @@
 #include "prey.h"
 #include "basic_funcs.h"
 #include "sim_funcs.h"
+#include "birth.h"
 #include <iostream>
 
 
