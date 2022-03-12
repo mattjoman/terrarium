@@ -9,7 +9,7 @@ Prey::Prey(int id_, std::vector<float> pos_) : Animal{id_, pos_}
 
 void Prey::inc_hunger()
 {
-	std::cout << "Prey don't get hungry" << std::endl;
+	//std::cout << "Prey don't get hungry" << std::endl;
 }
 
 

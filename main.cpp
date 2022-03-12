@@ -16,14 +16,7 @@ int main()
 	int n_living = 0;
 	Animal* animal_list[MAX_POPULATION];
 	int kill_list[MAX_DEATHS]; // animals to kill this timestep
-	//std::vector<std::string> birth_list;
-
-	// better way of doing this?
-	std::string label1("predator");
-	std::string label2("prey");
-
-
-
+	std::vector<Birth> birth_list;
 
 	// make initial predators and prey
 	int n_pred = 7;
@@ -51,17 +44,19 @@ int main()
 
 
 
-		/*
 
 
 		// calculation loop
 		for (int a=0; a<n_living; a++)
 		{
 
+			Animal* animal_a = animal_list[a];
 
-			if (animal_list[a]->is_due())
+
+			if (animal_a->is_due())
 			{
-				birth_list.push_back(animal_list[a]->type);
+				Birth new_birth(animal_a->type, animal_a->pos);
+				birth_list.push_back(new_birth);
 				birth_count++;
 			}
 
@@ -71,38 +66,36 @@ int main()
 			for (int b=0; b<n_living; b++)
 			{
 
-				if (animal_list[b]->id != animal_list[a]->id)
+				Animal* animal_b = animal_list[b];
+
+				if (animal_b->id != animal_a->id)
 				{
 					// if ids are different
 
-					std::string type_a = animal_list[a]->type;
-					std::string type_b = animal_list[b]->type;
 
 
-
-					if (type_a == type_b)
+					if (animal_a->type == animal_b->type)
 					{
-
-						// if animals are the same species
-						if (scalar_difference(animal_list[a]->pos, animal_list[b]->pos) < BREEDING_DISTANCE)
+						if (scalar_difference(animal_a->pos, animal_b->pos) < BREEDING_DISTANCE)
 						{
 							// breeding
-							if (!animal_list[a]->is_pregnant())
+							if (!animal_a->is_pregnant())
 							{
-								animal_list[a]->conceive();
+								animal_a->conceive();
 							}
 						}
 					}
 
-					else if (type_a == "predator")
+
+
+
+					else if (animal_a->type == "predator")
 					{
-						// predator-prey interactions
-						if (scalar_difference(animal_list[a]->pos, animal_list[b]->pos) < MUNCHING_DISTANCE)
+						if (scalar_difference(animal_a->pos, animal_b->pos) < MUNCHING_DISTANCE)
 						{
 							// predator munches prey
 
-							// subtract from animal's hunger and kill the prey predator's hunger
-							if (animal_list[a]->is_hungry())
+							if (animal_a->is_hungry())
 							{
 
 								if (!is_in_kill_list(b, kill_list, kill_count))
@@ -110,19 +103,23 @@ int main()
 									// add munched prey to kill list if not already on it
 									kill_list[kill_count] = b;
 									kill_count++;
-									animal_list[a]->eat();
-									std::cout << animal_list[b]->id << " got munched!" << std::endl;
+									animal_a->eat();
+									std::cout << animal_b->id << " got munched!" << std::endl;
 								}
 							}
 						}
 					}
+
+
+
+
+
 				}
 			}
 		} // end of calculation loop
 
 
 
-		*/
 
 
 
@@ -169,7 +166,9 @@ int main()
 			n_living--;
 			if (birth_count>0)
 			{
-				//new_animal(id, kill_list[kill_count-1], birth_list[birth_count-1], &animal_list[0]);
+				Birth new_birth = *(birth_list.end()-1);
+				new_animal(id, kill_list[kill_count-1], new_birth, &animal_list[0]);
+				birth_list.pop_back();
 				n_living++;
 				birth_count--;
 			}
@@ -189,11 +188,17 @@ int main()
 		}
 		while (birth_count>0)
 		{
-			//new_animal(id, n_living, birth_list[birth_count-1], &animal_list[0]);	
+			Birth new_birth = *(birth_list.end()-1);
+			new_animal(id, n_living, new_birth, &animal_list[0]);
+			birth_list.pop_back();
 			n_living++;
 			birth_count--;
 		}
-		//birth_list.clear();
+		birth_list.clear();
+		if (birth_list.size() == 0 && birth_count == 0)
+		{
+			std::cout << "Great success!" << std::endl;
+		}
 
 
 
@@ -226,10 +231,11 @@ int main()
 
 
 	
-	/*
-	// cleaning up
-	destroy_animal_list(animal_list);	
-	*/
+	// cleaning up heap memory
+	for (int i = 0; i < n_living; i++)
+	{
+		delete animal_list[i];
+	}
 
 	return 0;
 }
