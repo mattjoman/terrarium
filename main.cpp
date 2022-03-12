@@ -63,6 +63,11 @@ int main()
 		// calculation loop
 		for (int a=0; a<n_living; a++)
 		{
+			if (animal_list[a]->is_due())
+			{
+				birth_list.push_back(animal_list[a]->type);
+				birth_count++;
+			}
 
 			// interactions with other animals
 			for (int b=0; b<n_living; b++)
@@ -83,15 +88,7 @@ int main()
 						if (scalar_difference(animal_list[a]->pos, animal_list[b]->pos) < BREEDING_DISTANCE)
 						{
 							// breeding
-							if (animal_list[a]->is_pregnant())
-							{
-								if (animal_list[a]->is_due())
-								{
-									birth_list.push_back(animal_list[a]->type);
-									birth_count++;
-								}
-							}
-							else
+							if (!animal_list[a]->is_pregnant())
 							{
 								animal_list[a]->conceive();
 							}
