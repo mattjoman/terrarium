@@ -16,7 +16,7 @@ int main()
 	int n_living = 0;
 	Animal* animal_list[MAX_POPULATION];
 	int kill_list[MAX_DEATHS]; // animals to kill this timestep
-	std::vector<std::string> birth_list;
+	//std::vector<std::string> birth_list;
 
 	// better way of doing this?
 	std::string label1("predator");
@@ -26,18 +26,10 @@ int main()
 
 
 	// make initial predators and prey
-	for (int i=0; i<INITIAL_PREDATORS; i++)
-	{
-		new_animal(id, n_living, label1, &animal_list[0]);
-		n_living++;
-	}
-	for (int i=0; i<INITIAL_PREY; i++)
-	{
-		new_animal(id, n_living, label2, &animal_list[0]);
-		n_living++;
-	}
+	int n_pred = 7;
+	int n_prey = 7;
+	init_animals(n_pred, n_prey, id, n_living, &animal_list[0]);
 	
-
 
 
 
@@ -59,6 +51,7 @@ int main()
 
 
 
+		/*
 
 
 		// calculation loop
@@ -129,6 +122,9 @@ int main()
 
 
 
+		*/
+
+
 
 
 
@@ -173,19 +169,15 @@ int main()
 			n_living--;
 			if (birth_count>0)
 			{
-				// fill the hole with new animal
-				new_animal(id, kill_list[kill_count-1], birth_list[birth_count-1], &animal_list[0]);
+				//new_animal(id, kill_list[kill_count-1], birth_list[birth_count-1], &animal_list[0]);
 				n_living++;
 				birth_count--;
 			}
 			else
 			{
 				animal_list[kill_list[kill_count-1]] = animal_list[n_living];
-				// if the animal that was just moved in animal_list is in kill_list,
-				// we need to update its corresponding value in kill_list.
 				for (int k = 0; k < kill_count; k++)
 				{
-					// if tmp1 is in kill_list: change it to tmp2.
 					if (kill_list[k] == tmp1)
 					{
 						kill_list[k] = tmp2;
@@ -197,12 +189,11 @@ int main()
 		}
 		while (birth_count>0)
 		{
-			// add new animals to the end of animal_list
-			new_animal(id, n_living, birth_list[birth_count-1], &animal_list[0]);	
+			//new_animal(id, n_living, birth_list[birth_count-1], &animal_list[0]);	
 			n_living++;
 			birth_count--;
 		}
-		birth_list.clear();
+		//birth_list.clear();
 
 
 

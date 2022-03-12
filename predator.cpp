@@ -2,7 +2,7 @@
 #include "predator.h"
 
 
-Predator::Predator(int id_) : Animal{id_}
+Predator::Predator(int id_, std::vector<float> pos_) : Animal{id_, pos_}
 {
 	type = "predator";
 }

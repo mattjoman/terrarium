@@ -4,7 +4,7 @@
 #include "includes.h"
 
 struct Prey : Animal {
-	Prey(int id);
+	Prey(int id, std::vector<float> pos);
 	void inc_hunger();
 	void print();
 	~Prey();

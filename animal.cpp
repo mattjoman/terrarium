@@ -3,11 +3,11 @@
 #include "basic_funcs.h"
 
 
-Animal::Animal(int id_) : id{id_}
+Animal::Animal(int id_, std::vector<float> pos_) : id{id_}, pos{pos_}
 {
 	age = 0;
 	preg_status = 0;
-	pos = rand_vector(0, SPAWN_RADIUS);
+	//pos = rand_vector(0, SPAWN_RADIUS);
 	vel = rand_direction();
 	hunger = 0;
 }

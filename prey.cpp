@@ -1,7 +1,7 @@
 #include "prey.h"
 
 
-Prey::Prey(int id_) : Animal{id_}
+Prey::Prey(int id_, std::vector<float> pos_) : Animal{id_, pos_}
 {
 	type = "prey";
 }

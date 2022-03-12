@@ -4,27 +4,46 @@
  *	(eg. Animal).
  */
 #include "sim_funcs.h"
+#include "basic_funcs.h"
 #include "predator.h"
 #include "prey.h"
+#include "birth.h"
 
 
-void new_animal(int &id, int index, std::string species, Animal* animal_list[])
+void new_animal(int &id, int index, Birth new_birth, Animal* animal_list[])
 {
-	std::string species1("predator");
-	std::string species2("prey");
-
-	if (species.compare(species1) == 0)
+	if (new_birth.type == "predator")
 	{
-		//std::cout << "New Predator..." << std::endl;
-		Predator* animal = new Predator(id);
+		Predator* animal = new Predator(id, new_birth.pos);
 		animal_list[index] = animal;
-	} else if (species.compare(species2) == 0)
+	} else if (new_birth.type == "prey")
 	{
-		//std::cout << "New Prey..." << std::endl;
-		Prey* animal = new Prey(id);
+		Prey* animal = new Prey(id, new_birth.pos);
 		animal_list[index] = animal;
 	}
 	id++;
+	return;
+}
+
+
+void init_animals(int n_pred, int n_prey, int &id, int &n_living, Animal* animal_list[])
+{
+	for (int i = 0; i < n_pred; i++)
+	{
+		std::string type = "predator";
+		std::vector<float> pos = rand_vector(0, SPAWN_RADIUS);
+		Birth new_birth(type, pos);
+		new_animal(id, n_living, new_birth, &animal_list[0]);
+		n_living++;
+	}
+	for (int i = 0; i < n_prey; i++)
+	{
+		std::string type = "prey";
+		std::vector<float> pos = rand_vector(0, SPAWN_RADIUS);
+		Birth new_birth(type, pos);
+		new_animal(id, n_living, new_birth, &animal_list[0]);
+		n_living++;
+	}
 	return;
 }
 

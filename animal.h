@@ -12,7 +12,7 @@ struct Animal
 	std::vector<float> vel;
 	int hunger;
 
-	Animal(int id);
+	Animal(int id, std::vector<float> pos);
 	void move();
 	void print_pos();
 	bool is_pregnant(); //
