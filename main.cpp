@@ -5,6 +5,7 @@
 #include "basic_funcs.h"
 #include "sim_funcs.h"
 #include "birth.h"
+#include "output.h"
 #include <iostream>
 
 
@@ -12,6 +13,8 @@ int main()
 {
 
 	// initialising
+	std::string output_file = "out.dat";
+	create_output_file(output_file);
 	int id = 0; // initial id
 	int n_living = 0;
 	Animal* animal_list[MAX_POPULATION];
@@ -206,6 +209,8 @@ int main()
 		// update loop
 		for (int a=0; a<n_living; a++)
 		{
+			Animal* animal = animal_list[a];
+			append_output_file(output_file, t, animal->id, animal->type, animal->pos);
 			animal_list[a]->update();
 		}
 
