@@ -3,7 +3,7 @@
 #include "output.h"
 #include "includes.h"
 
-void create_output_file(std::string fname)
+void create_output_files()
 {
 	/*
 	 * Overwrite previous file, write the simulation params and
@@ -12,35 +12,67 @@ void create_output_file(std::string fname)
 
 	std::fstream file;
 
-	file.open("out.dat", std::ios::out);
+	file.open("params.txt", std::ios::out);
 	file << "";
 	file.close();
 
-	file.open(fname, std::ios::out | std::ios::app);
+	file.open("params.txt", std::ios::out | std::ios::app);
 	file << "MAX_TIMESTEPS " << TIMESTEPS << std::endl;
-	file << "" << std::endl;
-	file << "timestep id species x y" << std::endl;
+	file.close();
+
+	file.open("output.dat", std::ios::out);
+	file << "";
 	file.close();
 
 	return;
 }
 
 
-void append_output_file(
-		std::string fname,
-		int timestep,
-		int id,
-		std::string species,
-		std::vector<float> pos
+void append_animal_info(
+		bool								is_last_animal,
+		int 								id,
+		std::string 				species,
+		std::vector<float> 	pos
 		)
 {
 	/*
 	 * Write animal's data for the timestep.
+	 *
 	 */
 	std::fstream file;
 
-	file.open(fname, std::ios::out | std::ios::app);
-	file << timestep << " " << id << " " << species << " " << pos[0] << " " << pos[1] << std::endl;
+	if (!is_last_animal)
+	{
+		file.open("output.dat", std::ios::out | std::ios::app);
+		file << id << " " << species << " " << pos[0] << " " << pos[1] << " ";
+		file.close();
+	}
+	else
+	{
+		file.open("output.dat", std::ios::out | std::ios::app);
+		file << id << " " << species << " " << pos[0] << " " << pos[1] << std::endl;
+		file.close();
+	}
+
+	return;
+}
+
+
+
+
+void append_timestep_info(
+		int timestep,
+		int id,
+		int n_living
+		)
+{
+	/*
+	 * Write timestep info (timestep, cup pop, population, prey/predator populations)
+	 */
+	std::fstream file;
+
+	file.open("output.dat", std::ios::out | std::ios::app);
+	file << timestep << " " << id << " " << n_living << std::endl;
 	file.close();
 
 	return;

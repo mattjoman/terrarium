@@ -13,20 +13,16 @@ int main()
 {
 
 	// initialising
-	std::string output_file = "out.dat";
-	create_output_file(output_file);
+	create_output_files();
 	int id = 0; // initial id
 	int n_living = 0;
 	Animal* animal_list[MAX_POPULATION];
 	int kill_list[MAX_DEATHS]; // animals to kill this timestep
 	std::vector<Birth> birth_list;
+	int final_timestep = 0; // record the last timestep (for output file)
 
 	// make initial predators and prey
-	int n_pred = 7;
-	int n_prey = 7;
-	init_animals(n_pred, n_prey, id, n_living, &animal_list[0]);
-	
-
+	init_animals(INITIAL_PREDATORS, INITIAL_PREY, id, n_living, &animal_list[0]);
 
 
 	// main simulation loop
@@ -37,7 +33,10 @@ int main()
 		std::cout << "Population: " << n_living << std::endl;
 		std::cout << "ID: " << id << std::endl;
 
-		// reset kill and birth counters for the timestep
+		/* Add the timestep, cum pop, pop to the output file */
+		append_timestep_info(t, id, n_living);
+
+		/* reset kill and birth counters for the timestep */
 		int kill_count = 0;
 		int birth_count = 0;
 
@@ -49,13 +48,20 @@ int main()
 
 
 
-		// calculation loop
+		/* Calculation loop */
 		for (int a=0; a<n_living; a++)
 		{
 
 			Animal* animal_a = animal_list[a];
 
 
+			/* Write to files */
+			bool is_last_animal = false;
+			if (a == n_living-1) { is_last_animal = true; }
+			append_animal_info(is_last_animal, animal_a->id, animal_a->type, animal_a->pos);
+
+
+			/* Add births to birth_list */
 			if (animal_a->is_due())
 			{
 				Birth new_birth(animal_a->type, animal_a->pos);
@@ -65,7 +71,7 @@ int main()
 
 
 
-			// interactions with other animals
+			/* Interactions with other animals */
 			for (int b=0; b<n_living; b++)
 			{
 
@@ -73,7 +79,6 @@ int main()
 
 				if (animal_b->id != animal_a->id)
 				{
-					// if ids are different
 
 
 
@@ -81,7 +86,7 @@ int main()
 					{
 						if (scalar_difference(animal_a->pos, animal_b->pos) < BREEDING_DISTANCE)
 						{
-							// breeding
+							/* Breeding */
 							if (!animal_a->is_pregnant())
 							{
 								animal_a->conceive();
@@ -96,14 +101,14 @@ int main()
 					{
 						if (scalar_difference(animal_a->pos, animal_b->pos) < MUNCHING_DISTANCE)
 						{
-							// predator munches prey
+							/* Predator munches prey */
 
 							if (animal_a->is_hungry())
 							{
 
 								if (!is_in_kill_list(b, kill_list, kill_count))
 								{
-									// add munched prey to kill list if not already on it
+									/* Add munched prey to kill list if not already on it */
 									kill_list[kill_count] = b;
 									kill_count++;
 									animal_a->eat();
@@ -129,7 +134,7 @@ int main()
 
 
 
-		// add old or starved animals to the kill_list
+		/* Add old or starved animals to the kill_list */
 		for (int a = 0; a < n_living; a++)
 		{
 			if (!is_in_kill_list(a, kill_list, kill_count))
@@ -157,11 +162,11 @@ int main()
 		std::cout << "Births: " << birth_count << std::endl;
 		std::cout << "Deaths: " << kill_count << std::endl;
 
-		// new birth and death loop
+		/* Birth and death loop */
 		while (kill_count>0)
 		{
 
-			// used to keep kill_list correct
+			/* Used to keep kill_list correct */
 			int tmp1 = n_living - 1;
 			int tmp2 = kill_count - 1;
 
@@ -206,23 +211,19 @@ int main()
 
 
 
-		// update loop
+
+		/* Update loop */
 		for (int a=0; a<n_living; a++)
 		{
-			Animal* animal = animal_list[a];
-			append_output_file(output_file, t, animal->id, animal->type, animal->pos);
 			animal_list[a]->update();
 		}
 
 
 
+		final_timestep++;
 
 
-
-
-
-
-		// break simulation loop if all animals are dead
+		/* Break from simulation loop and add empty line to output file (pop 0) */
 		if (n_living == 0)
 		{
 			std::cout << "all dead!" << std::endl;
@@ -230,17 +231,28 @@ int main()
 			break;
 		}
 
+
+
+
 		std::cout << std::endl;
 	}
 
 
+	/* Add the timestep, cum pop, pop to the output file */
+	append_timestep_info(final_timestep, id, n_living);
 
 	
-	// cleaning up heap memory
+	/* Add survivors to output file and delete the animals */
+	bool is_last_animal = false;
 	for (int i = 0; i < n_living; i++)
 	{
-		delete animal_list[i];
+		if (i == n_living-1) { is_last_animal = true; }
+		Animal *animal = animal_list[i];
+		append_animal_info(is_last_animal, animal->id, animal->type, animal->pos);
+		delete animal;
 	}
+	std::cout << "exiting..." << std::endl;
+	std::cout << std::endl;
 
 	return 0;
 }
