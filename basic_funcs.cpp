@@ -7,6 +7,15 @@
 #include "basic_funcs.h"
 
 
+int rand_int(int from, int to, int seed)
+{
+	// return an integer between from and to
+	srand(seed);
+	int num = from + rand() % (to-from);
+	return num;
+}
+
+
 float rand_float(int from, int to, int seed)
 {
 	// return an integer (converted to float) between from and to

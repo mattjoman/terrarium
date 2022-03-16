@@ -5,6 +5,8 @@
  */
 #pragma once
 
+int rand_int(int from, int to, int seed);
+
 float rand_float(int from, int to, int seed);
 
 std::vector<float> rand_direction();

@@ -139,7 +139,7 @@ int main()
 		{
 			if (!is_in_kill_list(a, kill_list, kill_count))
 			{
-				if (animal_list[a]->age >= MAX_AGE)
+				if (animal_list[a]->age >= animal_list[a]->death_age)
 				{
 					std::cout << animal_list[a]->id << " died of old age" << std::endl;
 					kill_list[kill_count] = a;
@@ -161,6 +161,8 @@ int main()
 
 		std::cout << "Births: " << birth_count << std::endl;
 		std::cout << "Deaths: " << kill_count << std::endl;
+		std::cout << "Death age: " << animal_list[0]->death_age << std::endl;
+
 
 		/* Birth and death loop */
 		while (kill_count>0)

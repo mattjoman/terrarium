@@ -11,6 +11,7 @@ struct Animal
 	std::vector<float> pos;
 	std::vector<float> vel;
 	int hunger;
+	int death_age;
 
 	Animal(int id, std::vector<float> pos);
 	void move();

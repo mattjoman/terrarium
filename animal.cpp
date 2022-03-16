@@ -1,15 +1,17 @@
 #include <iostream>
 #include "animal.h"
 #include "basic_funcs.h"
+#include "config.h"
 
 
 Animal::Animal(int id_, std::vector<float> pos_) : id{id_}, pos{pos_}
 {
 	age = 0;
 	preg_status = 0;
-	//pos = rand_vector(0, SPAWN_RADIUS);
 	vel = rand_direction();
 	hunger = 0;
+	std::random_device rd;
+	death_age = rand_int(MIN_DEATH_AGE, MAX_DEATH_AGE, rd());
 }
 
 
