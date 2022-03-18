@@ -161,9 +161,14 @@ int main()
 		std::cout << "Births: " << birth_count << std::endl;
 		std::cout << "Deaths: " << kill_count << std::endl;
 
+		/* Guard against overpopulating animal_list */
 		if (n_living + birth_count - kill_count >= MAX_POPULATION)
 		{
 			std::cout << "Too many animals!" << std::endl;
+			for (int a = 0; a < n_living; a++)
+			{
+				delete animal_list[a];
+			}
 			exit(0);
 		}
 
