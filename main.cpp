@@ -28,7 +28,6 @@ int main()
 	// main simulation loop
 	for (int t=0; t<TIMESTEPS; t++)
 	{
-
 		std::cout << "----- TIMESTEP " << t << " -----"<< std::endl;
 		std::cout << "Population: " << n_living << std::endl;
 		std::cout << "ID: " << id << std::endl;
@@ -161,7 +160,12 @@ int main()
 
 		std::cout << "Births: " << birth_count << std::endl;
 		std::cout << "Deaths: " << kill_count << std::endl;
-		std::cout << "Death age: " << animal_list[0]->death_age << std::endl;
+
+		if (n_living + birth_count - kill_count >= MAX_POPULATION)
+		{
+			std::cout << "Too many animals!" << std::endl;
+			exit(0);
+		}
 
 
 		/* Birth and death loop */
