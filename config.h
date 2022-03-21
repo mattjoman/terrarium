@@ -4,7 +4,7 @@
 #define TIMESTEPS 50 
 
 // Maximum animals living at once
-#define MAX_POPULATION 1000 
+#define MAX_POPULATION 1000
 
 // Maximum deaths per timestep
 #define MAX_DEATHS 10000 
