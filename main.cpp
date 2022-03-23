@@ -1,4 +1,5 @@
 #include "app.h"
+#include "simulation.h"
 
 int main(int argc, char ** argv)
 {

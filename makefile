@@ -1,5 +1,5 @@
-terrarium: main.cpp app.cpp simulation.cpp animal.cpp predator.cpp prey.cpp basic_funcs.cpp sim_funcs.cpp birth.cpp output.cpp
-	g++ -lncurses main.cpp app.cpp simulation.cpp animal.cpp predator.cpp prey.cpp basic_funcs.cpp sim_funcs.cpp birth.cpp output.cpp
+terrarium: main.cpp app.cpp simulation.cpp animal.cpp predator.cpp prey.cpp basic_funcs.cpp sim_funcs.cpp birth.cpp output.cpp config.cpp
+	g++ -lncurses main.cpp app.cpp simulation.cpp animal.cpp predator.cpp prey.cpp basic_funcs.cpp sim_funcs.cpp birth.cpp output.cpp config.cpp
 
 
 #all: terrarium

@@ -3,7 +3,7 @@
 #include "output.h"
 #include "includes.h"
 
-void create_output_files()
+void create_output_files(Config* config)
 {
 	/*
 	 * Overwrite previous file, write the simulation params and
@@ -17,7 +17,7 @@ void create_output_files()
 	file.close();
 
 	file.open("params.txt", std::ios::out | std::ios::app);
-	file << "MAX_TIMESTEPS " << TIMESTEPS << std::endl;
+	file << "MAX_TIMESTEPS " << config->TIMESTEPS << std::endl;
 	file.close();
 
 	file.open("output.dat", std::ios::out);

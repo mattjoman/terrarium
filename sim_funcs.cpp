@@ -10,15 +10,15 @@
 #include "birth.h"
 
 
-void new_animal(int &id, int index, Birth new_birth, Animal* animal_list[])
+void new_animal(int &id, int index, Birth new_birth, Animal* animal_list[], Config* config)
 {
 	if (new_birth.type == "predator")
 	{
-		Predator* animal = new Predator(id, new_birth.pos);
+		Predator* animal = new Predator(id, new_birth.pos, config->MIN_DEATH_AGE, config->MAX_DEATH_AGE);
 		animal_list[index] = animal;
 	} else if (new_birth.type == "prey")
 	{
-		Prey* animal = new Prey(id, new_birth.pos);
+		Prey* animal = new Prey(id, new_birth.pos, config->MIN_DEATH_AGE, config->MAX_DEATH_AGE);
 		animal_list[index] = animal;
 	}
 	id++;
@@ -26,22 +26,22 @@ void new_animal(int &id, int index, Birth new_birth, Animal* animal_list[])
 }
 
 
-void init_animals(int n_pred, int n_prey, int &id, int &n_living, Animal* animal_list[])
+void init_animals(int n_pred, int n_prey, int &id, int &n_living, Animal* animal_list[], Config* config)
 {
 	for (int i = 0; i < n_pred; i++)
 	{
 		std::string type = "predator";
-		std::vector<float> pos = rand_vector(0, SPAWN_RADIUS);
+		std::vector<float> pos = rand_vector(0, config->SPAWN_RADIUS);
 		Birth new_birth(type, pos);
-		new_animal(id, n_living, new_birth, &animal_list[0]);
+		new_animal(id, n_living, new_birth, &animal_list[0], config);
 		n_living++;
 	}
 	for (int i = 0; i < n_prey; i++)
 	{
 		std::string type = "prey";
-		std::vector<float> pos = rand_vector(0, SPAWN_RADIUS);
+		std::vector<float> pos = rand_vector(0, config->SPAWN_RADIUS);
 		Birth new_birth(type, pos);
-		new_animal(id, n_living, new_birth, &animal_list[0]);
+		new_animal(id, n_living, new_birth, &animal_list[0], config);
 		n_living++;
 	}
 	return;
@@ -55,7 +55,7 @@ void erase_animal(int index, Animal* animal_list[])
 }
 
 
-bool is_in_kill_list(int element, int kill_list[MAX_DEATHS], int kill_count)
+bool is_in_kill_list(int element, int kill_list[DEATH_LIST_LENGTH], int kill_count)
 {
 	// return true if the element is in kill_list
 	bool in_kill_list = false;

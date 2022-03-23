@@ -1,3 +1,4 @@
+#include "config.h"
 #include "includes.h"
 #include "animal.h"
 #include "predator.h"
@@ -10,24 +11,24 @@
 #include <future>
 
 
-void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *current_timestep, int *current_population, int *cum_population)
+void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *current_timestep, int *current_population, int *cum_population, Config* config)
 {
 
 	// initialising
-	create_output_files();
+	create_output_files(config);
 	int id = 0; // initial id
 	int n_living = 0;
-	Animal* animal_list[MAX_POPULATION];
-	int kill_list[MAX_DEATHS]; // animals to kill this timestep
+	Animal* animal_list[ANIMAL_LIST_LENGTH];
+	int kill_list[DEATH_LIST_LENGTH]; // animals to kill this timestep
 	std::vector<Birth> birth_list;
 	int final_timestep = 0; // record the last timestep (for output file)
 
 	// make initial predators and prey
-	init_animals(INITIAL_PREDATORS, INITIAL_PREY, id, n_living, &animal_list[0]);
+	init_animals(config->INITIAL_PREDATORS, config->INITIAL_PREY, id, n_living, &animal_list[0], config);
 
 
 	// main simulation loop
-	for (int t=0; t<TIMESTEPS; t++)
+	for (int t=0; t < config->TIMESTEPS; t++)
 	{
 		/* Add the timestep, cum pop, pop to the output file */
 		append_timestep_info(t, id, n_living);
@@ -80,12 +81,12 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 
 					if (animal_a->type == animal_b->type)
 					{
-						if (scalar_difference(animal_a->pos, animal_b->pos) < BREEDING_DISTANCE)
+						if (scalar_difference(animal_a->pos, animal_b->pos) < config->BREEDING_DISTANCE)
 						{
 							/* Breeding */
 							if (!animal_a->is_pregnant())
 							{
-								animal_a->conceive();
+								animal_a->conceive(config->PREGNANCY_PERIOD);
 							}
 						}
 					}
@@ -95,7 +96,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 
 					else if (animal_a->type == "predator")
 					{
-						if (scalar_difference(animal_a->pos, animal_b->pos) < MUNCHING_DISTANCE)
+						if (scalar_difference(animal_a->pos, animal_b->pos) < config->MUNCHING_DISTANCE)
 						{
 							/* Predator munches prey */
 
@@ -138,7 +139,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 				{
 					kill_list[kill_count] = a;
 					kill_count++;
-				} else if (animal_list[a]->hunger >= MAX_HUNGER)
+				} else if (animal_list[a]->hunger >= config->MAX_HUNGER)
 				{
 					kill_list[kill_count] = a;
 					kill_count++;
@@ -151,7 +152,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 
 
 		/* Guard against overpopulating animal_list */
-		if (n_living + birth_count - kill_count >= MAX_POPULATION)
+		if (n_living + birth_count - kill_count >= config->MAX_POPULATION)
 		{
 			for (int a = 0; a < n_living; a++)
 			{
@@ -181,7 +182,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 			if (birth_count>0)
 			{
 				Birth new_birth = *(birth_list.end()-1);
-				new_animal(id, kill_list[kill_count-1], new_birth, &animal_list[0]);
+				new_animal(id, kill_list[kill_count-1], new_birth, &animal_list[0], config);
 				birth_list.pop_back();
 				n_living++;
 				birth_count--;
@@ -203,7 +204,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 		while (birth_count>0)
 		{
 			Birth new_birth = *(birth_list.end()-1);
-			new_animal(id, n_living, new_birth, &animal_list[0]);
+			new_animal(id, n_living, new_birth, &animal_list[0], config);
 			birth_list.pop_back();
 			n_living++;
 			birth_count--;

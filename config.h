@@ -1,5 +1,6 @@
 #pragma once
 
+/*
 // Maximum number of timesteps
 #define TIMESTEPS 50 
 
@@ -21,3 +22,35 @@
 #define INITIAL_PREDATORS 7 // initial predator count
 #define INITIAL_PREY 7 // initial prey count
 #define FOV 10 // max distance animals can see
+*/
+#define ANIMAL_LIST_LENGTH 100000
+#define DEATH_LIST_LENGTH  100000
+
+//#define MIN_DEATH_AGE      5
+//#define MAX_DEATH_AGE      10
+//#define PREGNANCY_PERIOD   3
+//#define SPAWN_RADIUS       15
+
+struct Config
+{
+		int TIMESTEPS;
+		int MAX_POPULATION;
+		int MAX_DEATHS;
+		int MIN_DEATH_AGE;
+		int MAX_DEATH_AGE;
+		int MAX_HUNGER;
+		int BREEDING_DISTANCE;
+		int MUNCHING_DISTANCE;
+		int PREGNANCY_PERIOD;
+		int SPAWN_RADIUS;
+		int INITIAL_PREDATORS;
+		int INITIAL_PREY;
+};
+
+//Config_Data read_config();
+
+//void write_config(Config_Data data);
+
+Config* read_config();
+
+void write_config(Config* config);

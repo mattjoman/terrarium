@@ -13,12 +13,12 @@ struct Animal
 	int hunger;
 	int death_age;
 
-	Animal(int id, std::vector<float> pos);
+	Animal(int id, std::vector<float> pos, int min_death_age, int max_death_age);
 	void move();
 	void print_pos();
 	bool is_pregnant(); //
 	bool is_due(); //
-	void conceive(); //
+	void conceive(int pregnancy_period); //
 	void continue_pregnancy(); //
 	bool is_hungry();
 	void eat(); //

@@ -1,8 +1,9 @@
 #pragma once
 #include <fstream>
 #include <vector>
+#include "config.h"
 
-void create_output_files();
+void create_output_files(Config* config);
 
 void append_animal_info(
 		bool 								is_last_animal,

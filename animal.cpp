@@ -4,14 +4,14 @@
 #include "config.h"
 
 
-Animal::Animal(int id_, std::vector<float> pos_) : id{id_}, pos{pos_}
+Animal::Animal(int id_, std::vector<float> pos_, int min_death_age, int max_death_age) : id{id_}, pos{pos_}
 {
 	age = 0;
 	preg_status = 0;
 	vel = rand_direction();
 	hunger = 0;
 	std::random_device rd;
-	death_age = rand_int(MIN_DEATH_AGE, MAX_DEATH_AGE, rd());
+	death_age = rand_int(min_death_age, max_death_age, rd());
 }
 
 
@@ -55,9 +55,9 @@ bool Animal::is_due()
 }
 
 
-void Animal::conceive()
+void Animal::conceive(int pregnancy_period)
 {
-	preg_status = PREGNANCY_PERIOD;
+	preg_status = pregnancy_period;
 }
 
 
