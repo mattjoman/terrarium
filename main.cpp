@@ -14,7 +14,8 @@ int main(int argc, char ** argv)
 
 	int option;
 
-	while (true)
+	bool terrarium = true;
+	while (terrarium)
 	{
 
 		option = display_menu(y_max, x_max);
@@ -29,15 +30,14 @@ int main(int argc, char ** argv)
 			case 1:
 				edit_params(y_max, x_max);
 				break;
+			case 2:
+				terrarium = false;
+				break;
 			default:
 				refresh();
 				break;
 		}
 	}
-
-	// make sure program waits before exiting
-	getch();
 	endwin();
-
 	return 0;
 }

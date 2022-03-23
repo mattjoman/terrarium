@@ -3,11 +3,30 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include "includes.h"
 
-Config* read_config()
+std::map<std::string, int>* read_config()
 {
 
-	Config* config = new Config;
+	//Config* config = new Config;
+	//
+	std::vector<std::string> keys = 
+	{
+		"TIMESTEPS",
+		"MAX_POPULATION",
+		"MAX_DEATHS",
+		"MIN_DEATH_AGE",
+		"MAX_DEATH_AGE",
+		"MAX_HUNGER",
+		"BREEDING_DISTANCE",
+		"MUNCHING_DISTANCE",
+		"PREGNANCY_PERIOD",
+		"SPAWN_RADIUS",
+		"INITIAL_PREDATORS",
+		"INITIAL_PREY"
+	};
+
+	std::map<std::string, int>* config = new std::map<std::string, int>;
 	
 	// check if the config file exists and is correct
 	bool file_exists = true;
@@ -19,57 +38,18 @@ Config* read_config()
 		if (file.is_open())
 		{
 			std::string line;
-			for (int i = 0; i < 12; i++)
+			for (int i = 0; i < keys.size(); i++)
 			{
 				getline(file, line);
 				std::stringstream num(line);
 				int val;
 				num >> val;
-				switch (i)
-				{
-				case 0:
-					config->TIMESTEPS = val;
-					break;
-				case 1:
-					config->MAX_POPULATION = val;
-					break;
-				case 2:
-					config->MAX_DEATHS = val;
-					break;
-				case 3:
-					config->MIN_DEATH_AGE = val;
-					break;
-				case 4:
-					config->MAX_DEATH_AGE = val;
-					break;
-				case 5:
-					config->MAX_HUNGER = val;
-					break;
-				case 6:
-					config->BREEDING_DISTANCE = val;
-					break;
-				case 7:
-					config->MUNCHING_DISTANCE = val;
-					break;
-				case 8:
-					config->PREGNANCY_PERIOD = val;
-					break;
-				case 9:
-					config->SPAWN_RADIUS = val;
-					break;
-				case 10:
-					config->INITIAL_PREDATORS = val;
-					break;
-				case 11:
-					config->INITIAL_PREY = val;
-					break;
-				default:
-					break;
-				}
+				(*config)[keys[i]] = val; // add key-val pair to the config map
 			}
 			file.close();   //close the file object.
 		}
 	}
+	/*
 	else
 	{
 		config->TIMESTEPS = 50;
@@ -85,6 +65,7 @@ Config* read_config()
 		config->INITIAL_PREDATORS = 7;
 		config->INITIAL_PREY = 7;
 	}
+	*/
 
 
 
@@ -96,8 +77,35 @@ Config* read_config()
 	return config;
 }
 
-void write_config(Config* config)
+void write_config(std::map<std::string, int> new_config)
 {
+	std::vector<std::string> keys = 
+	{
+		"TIMESTEPS",
+		"MAX_POPULATION",
+		"MAX_DEATHS",
+		"MIN_DEATH_AGE",
+		"MAX_DEATH_AGE",
+		"MAX_HUNGER",
+		"BREEDING_DISTANCE",
+		"MUNCHING_DISTANCE",
+		"PREGNANCY_PERIOD",
+		"SPAWN_RADIUS",
+		"INITIAL_PREDATORS",
+		"INITIAL_PREY"
+	};
+
+	std::fstream file;
+
+	file.open("config.dat", std::ios::out);
+	file << "";
+	file.close();
+	file.open("config.dat", std::ios::out | std::ios::app);
+	for (int i = 0; i < keys.size(); i++)
+	{
+		file << new_config[keys[i]] << std::endl;
+	}
+	file.close();
 }
 
 

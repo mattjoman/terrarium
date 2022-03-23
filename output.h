@@ -3,7 +3,7 @@
 #include <vector>
 #include "config.h"
 
-void create_output_files(Config* config);
+void create_output_files(std::map<std::string, int>* config);
 
 void append_animal_info(
 		bool 								is_last_animal,

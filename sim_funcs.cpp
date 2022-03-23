@@ -10,15 +10,15 @@
 #include "birth.h"
 
 
-void new_animal(int &id, int index, Birth new_birth, Animal* animal_list[], Config* config)
+void new_animal(int &id, int index, Birth new_birth, Animal* animal_list[], std::map<std::string, int>* config)
 {
 	if (new_birth.type == "predator")
 	{
-		Predator* animal = new Predator(id, new_birth.pos, config->MIN_DEATH_AGE, config->MAX_DEATH_AGE);
+		Predator* animal = new Predator(id, new_birth.pos, (*config)["MIN_DEATH_AGE"], (*config)["MAX_DEATH_AGE"]);
 		animal_list[index] = animal;
 	} else if (new_birth.type == "prey")
 	{
-		Prey* animal = new Prey(id, new_birth.pos, config->MIN_DEATH_AGE, config->MAX_DEATH_AGE);
+		Prey* animal = new Prey(id, new_birth.pos, (*config)["MIN_DEATH_AGE"], (*config)["MAX_DEATH_AGE"]);
 		animal_list[index] = animal;
 	}
 	id++;
@@ -26,12 +26,12 @@ void new_animal(int &id, int index, Birth new_birth, Animal* animal_list[], Conf
 }
 
 
-void init_animals(int n_pred, int n_prey, int &id, int &n_living, Animal* animal_list[], Config* config)
+void init_animals(int n_pred, int n_prey, int &id, int &n_living, Animal* animal_list[], std::map<std::string, int>* config)
 {
 	for (int i = 0; i < n_pred; i++)
 	{
 		std::string type = "predator";
-		std::vector<float> pos = rand_vector(0, config->SPAWN_RADIUS);
+		std::vector<float> pos = rand_vector(0, (*config)["SPAWN_RADIUS"]);
 		Birth new_birth(type, pos);
 		new_animal(id, n_living, new_birth, &animal_list[0], config);
 		n_living++;
@@ -39,7 +39,7 @@ void init_animals(int n_pred, int n_prey, int &id, int &n_living, Animal* animal
 	for (int i = 0; i < n_prey; i++)
 	{
 		std::string type = "prey";
-		std::vector<float> pos = rand_vector(0, config->SPAWN_RADIUS);
+		std::vector<float> pos = rand_vector(0, (*config)["SPAWN_RADIUS"]);
 		Birth new_birth(type, pos);
 		new_animal(id, n_living, new_birth, &animal_list[0], config);
 		n_living++;
