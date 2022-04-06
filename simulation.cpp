@@ -76,8 +76,10 @@ bool is_in_kill_list(int element, int kill_list[DEATH_LIST_LENGTH], int kill_cou
 
 
 
-void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *current_timestep, int *current_population, int *cum_population, std::map<std::string, int>* config)
+void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *current_timestep, int *current_population, int *cum_population)
 {
+	// read config
+	std::map<std::string, int>* config = read_config();	
 
 	// initialising
 	create_output_files(config);

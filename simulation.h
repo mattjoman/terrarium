@@ -21,7 +21,7 @@ void erase_animal(int index, Animal* animal_list[]);
 bool is_in_kill_list(int element, int kill_list[DEATH_LIST_LENGTH], int kill_count);
 
 /* Runs the simulation */
-void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *current_timestep, int *current_population, int *cum_population, std::map<std::string, int>* config);
+void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *current_timestep, int *current_population, int *cum_population);
 
 
 

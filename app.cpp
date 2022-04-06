@@ -13,7 +13,7 @@ using namespace std;
 void run_simulation(int highlight, int y_max, int x_max)
 {
 	// in shared memory:
-	std::map<std::string, int>* config = read_config();
+	//std::map<std::string, int>* config = read_config(); // read config in simulation()
 	bool *is_finished = new bool(false);
 	int *current_timestep = new int(0);
 	int *current_population = new int(0);
@@ -24,7 +24,7 @@ void run_simulation(int highlight, int y_max, int x_max)
 	std::future<int> sim_exit_code_future = sim_exit_code.get_future();
 	
 	// start simulation
-	std::thread sim_thread(simulation, std::move(sim_exit_code), is_finished, current_timestep, current_population, cum_population, config);
+	std::thread sim_thread(simulation, std::move(sim_exit_code), is_finished, current_timestep, current_population, cum_population);
 	
 	// create window for displaying simulation progress
 	WINDOW *simwin = newwin(6, x_max-12, y_max-8, 5);
@@ -86,7 +86,7 @@ void run_simulation(int highlight, int y_max, int x_max)
 	delete current_timestep;
 	delete current_population;
 	delete cum_population;
-	delete config;
+	//delete config;
 }
 
 

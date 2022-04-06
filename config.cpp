@@ -49,31 +49,6 @@ std::map<std::string, int>* read_config()
 			file.close();   //close the file object.
 		}
 	}
-	/*
-	else
-	{
-		config->TIMESTEPS = 50;
-		config->MAX_POPULATION = 1000;
-		config->MAX_DEATHS = 1000;
-		config->MIN_DEATH_AGE = 5;
-		config->MAX_DEATH_AGE = 10;
-		config->MAX_HUNGER = 3;
-		config->BREEDING_DISTANCE = 2;
-		config->MUNCHING_DISTANCE = 4;
-		config->PREGNANCY_PERIOD = 3;
-		config->SPAWN_RADIUS = 15;
-		config->INITIAL_PREDATORS = 7;
-		config->INITIAL_PREY = 7;
-	}
-	*/
-
-
-
-	// read data from the config file and add it to the Config* object
-	
-	/*
-	*/
-
 	return config;
 }
 
@@ -107,15 +82,3 @@ void write_config(std::map<std::string, int> new_config)
 	}
 	file.close();
 }
-
-
-/*
-int main()
-{
-	Config* config = read_config();
-
-	std::cout << config->TIMESTEPS << std::endl;
-
-	return 0;
-}
-*/
