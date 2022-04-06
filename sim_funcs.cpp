@@ -26,9 +26,9 @@ void new_animal(int &id, int index, Birth new_birth, Animal* animal_list[], std:
 }
 
 
-void init_animals(int n_pred, int n_prey, int &id, int &n_living, Animal* animal_list[], std::map<std::string, int>* config)
+void init_animals(int &id, int &n_living, Animal* animal_list[], std::map<std::string, int>* config)
 {
-	for (int i = 0; i < n_pred; i++)
+	for (int i = 0; i < (*config)["INITIAL_PREDATORS"]; i++)
 	{
 		std::string type = "predator";
 		std::vector<float> pos = rand_vector(0, (*config)["SPAWN_RADIUS"]);
@@ -36,7 +36,7 @@ void init_animals(int n_pred, int n_prey, int &id, int &n_living, Animal* animal
 		new_animal(id, n_living, new_birth, &animal_list[0], config);
 		n_living++;
 	}
-	for (int i = 0; i < n_prey; i++)
+	for (int i = 0; i < (*config)["INITIAL_PREY"]; i++)
 	{
 		std::string type = "prey";
 		std::vector<float> pos = rand_vector(0, (*config)["SPAWN_RADIUS"]);

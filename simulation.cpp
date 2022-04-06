@@ -24,7 +24,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 	int final_timestep = 0; // record the last timestep (for output file)
 
 	// make initial predators and prey
-	init_animals((*config)["INITIAL_PREDATORS"], (*config)["INITIAL_PREY"], id, n_living, &animal_list[0], config);
+	init_animals(id, n_living, &animal_list[0], config);
 
 
 	// main simulation loop
