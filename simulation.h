@@ -12,9 +12,9 @@
 
 
 
-void new_animal(int &id, int index, Birth new_birth, Animal* animal_list[], std::map<std::string, int>* config);
+void new_animal(int &id, int index, Birth new_birth, Animal* animal_list[], std::map<std::string, int> config);
 
-void init_animals(int &id, int &n_living, Animal* animal_list[], std::map<std::string, int>* config);
+void init_animals(int &id, int &n_living, Animal* animal_list[], std::map<std::string, int> config);
 
 void erase_animal(int index, Animal* animal_list[]);
 

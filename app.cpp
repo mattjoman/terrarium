@@ -13,7 +13,6 @@ using namespace std;
 void run_simulation(int highlight, int y_max, int x_max)
 {
 	// in shared memory:
-	//std::map<std::string, int>* config = read_config(); // read config in simulation()
 	bool *is_finished = new bool(false);
 	int *current_timestep = new int(0);
 	int *current_population = new int(0);
@@ -86,7 +85,6 @@ void run_simulation(int highlight, int y_max, int x_max)
 	delete current_timestep;
 	delete current_population;
 	delete cum_population;
-	//delete config;
 }
 
 
@@ -185,7 +183,7 @@ void edit_params(int y_max, int x_max)
 
 	// read the config file
 	//Config* config = read_config();
-	std::map<std::string, int>* config = read_config();
+	std::map<std::string, int> config = read_config();
 	
 	// make map for new config:
 	std::map<std::string, int> new_config = {};
@@ -196,7 +194,7 @@ void edit_params(int y_max, int x_max)
 	mvwprintw(editorwin, 1,  1, "Current config:");
 	mvwprintw(editorwin, 1, 36, "New config:");
 	int i = 0;
-	for (auto itr = (*config).begin(); itr != (*config).end(); itr++)
+	for (auto itr = config.begin(); itr != config.end(); itr++)
 	{
 		// copy the old config into the new config
 		new_config[(*itr).first] = (*itr).second;
@@ -279,7 +277,6 @@ void edit_params(int y_max, int x_max)
 	write_config(new_config);
 	delwin(editorwin);
 	clear();
-	delete config;
 }
 
 

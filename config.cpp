@@ -5,7 +5,7 @@
 #include <string>
 #include "includes.h"
 
-std::map<std::string, int>* read_config()
+std::map<std::string, int> read_config()
 {
 
 	//Config* config = new Config;
@@ -26,7 +26,7 @@ std::map<std::string, int>* read_config()
 		"INITIAL_PREY"
 	};
 
-	std::map<std::string, int>* config = new std::map<std::string, int>;
+	std::map<std::string, int> config;
 	
 	// check if the config file exists and is correct
 	bool file_exists = true;
@@ -44,7 +44,7 @@ std::map<std::string, int>* read_config()
 				std::stringstream num(line);
 				int val;
 				num >> val;
-				(*config)[keys[i]] = val; // add key-val pair to the config map
+				config[keys[i]] = val; // add key-val pair to the config map
 			}
 			file.close();   //close the file object.
 		}

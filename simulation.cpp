@@ -10,15 +10,15 @@
 #include <future>
 
 
-void new_animal(int &id, int index, Birth new_birth, Animal* animal_list[], std::map<std::string, int>* config)
+void new_animal(int &id, int index, Birth new_birth, Animal* animal_list[], std::map<std::string, int> config)
 {
 	if (new_birth.type == "predator")
 	{
-		Predator* animal = new Predator(id, new_birth.pos, (*config)["MIN_DEATH_AGE"], (*config)["MAX_DEATH_AGE"]);
+		Predator* animal = new Predator(id, new_birth.pos, config["MIN_DEATH_AGE"], config["MAX_DEATH_AGE"]);
 		animal_list[index] = animal;
 	} else if (new_birth.type == "prey")
 	{
-		Prey* animal = new Prey(id, new_birth.pos, (*config)["MIN_DEATH_AGE"], (*config)["MAX_DEATH_AGE"]);
+		Prey* animal = new Prey(id, new_birth.pos, config["MIN_DEATH_AGE"], config["MAX_DEATH_AGE"]);
 		animal_list[index] = animal;
 	}
 	id++;
@@ -26,20 +26,20 @@ void new_animal(int &id, int index, Birth new_birth, Animal* animal_list[], std:
 }
 
 
-void init_animals(int &id, int &n_living, Animal* animal_list[], std::map<std::string, int>* config)
+void init_animals(int &id, int &n_living, Animal* animal_list[], std::map<std::string, int> config)
 {
-	for (int i = 0; i < (*config)["INITIAL_PREDATORS"]; i++)
+	for (int i = 0; i < config["INITIAL_PREDATORS"]; i++)
 	{
 		std::string type = "predator";
-		std::vector<float> pos = rand_vector(0, (*config)["SPAWN_RADIUS"]);
+		std::vector<float> pos = rand_vector(0, config["SPAWN_RADIUS"]);
 		Birth new_birth(type, pos);
 		new_animal(id, n_living, new_birth, &animal_list[0], config);
 		n_living++;
 	}
-	for (int i = 0; i < (*config)["INITIAL_PREY"]; i++)
+	for (int i = 0; i < config["INITIAL_PREY"]; i++)
 	{
 		std::string type = "prey";
-		std::vector<float> pos = rand_vector(0, (*config)["SPAWN_RADIUS"]);
+		std::vector<float> pos = rand_vector(0, config["SPAWN_RADIUS"]);
 		Birth new_birth(type, pos);
 		new_animal(id, n_living, new_birth, &animal_list[0], config);
 		n_living++;
@@ -79,7 +79,7 @@ bool is_in_kill_list(int element, int kill_list[DEATH_LIST_LENGTH], int kill_cou
 void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *current_timestep, int *current_population, int *cum_population)
 {
 	// read config
-	std::map<std::string, int>* config = read_config();	
+	std::map<std::string, int> config = read_config();	
 
 	// initialising
 	create_output_files(config);
@@ -95,7 +95,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 
 
 	// main simulation loop
-	for (int t=0; t < (*config)["TIMESTEPS"]; t++)
+	for (int t=0; t < config["TIMESTEPS"]; t++)
 	{
 		/* Add the timestep, cum pop, pop to the output file */
 		append_timestep_info(t, id, n_living);
@@ -148,12 +148,12 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 
 					if (animal_a->type == animal_b->type)
 					{
-						if (scalar_difference(animal_a->pos, animal_b->pos) < (*config)["BREEDING_DISTANCE"])
+						if (scalar_difference(animal_a->pos, animal_b->pos) < config["BREEDING_DISTANCE"])
 						{
 							/* Breeding */
 							if (!animal_a->is_pregnant())
 							{
-								animal_a->conceive((*config)["PREGNANCY_PERIOD"]);
+								animal_a->conceive(config["PREGNANCY_PERIOD"]);
 							}
 						}
 					}
@@ -163,7 +163,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 
 					else if (animal_a->type == "predator")
 					{
-						if (scalar_difference(animal_a->pos, animal_b->pos) < (*config)["MUNCHING_DISTANCE"])
+						if (scalar_difference(animal_a->pos, animal_b->pos) < config["MUNCHING_DISTANCE"])
 						{
 							/* Predator munches prey */
 
@@ -206,7 +206,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 				{
 					kill_list[kill_count] = a;
 					kill_count++;
-				} else if (animal_list[a]->hunger >= (*config)["MAX_HUNGER"])
+				} else if (animal_list[a]->hunger >= config["MAX_HUNGER"])
 				{
 					kill_list[kill_count] = a;
 					kill_count++;
@@ -219,7 +219,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 
 
 		/* Guard against overpopulating animal_list */
-		if (n_living + birth_count - kill_count >= (*config)["MAX_POPULATION"])
+		if (n_living + birth_count - kill_count >= config["MAX_POPULATION"])
 		{
 			for (int a = 0; a < n_living; a++)
 			{
