@@ -10,7 +10,6 @@ int main(int argc, char ** argv)
 
 	// get screen size
 	int y_max, x_max;
-	getmaxyx(stdscr, y_max, x_max);
 
 	int option;
 
@@ -18,17 +17,17 @@ int main(int argc, char ** argv)
 	while (terrarium)
 	{
 
-		option = display_menu(y_max, x_max);
+		option = display_menu();
 
 		// process option
 		switch (option)
 		{
 			case 0:
 				// destroy the window and call the run_simulation function
-				run_simulation(option, y_max, x_max);
+				run_simulation(option);
 				break;
 			case 1:
-				edit_params(y_max, x_max);
+				edit_params();
 				break;
 			case 2:
 				terrarium = false;

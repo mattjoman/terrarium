@@ -10,7 +10,7 @@ using namespace std;
 
 
 
-void run_simulation(int highlight, int y_max, int x_max)
+void run_simulation(int highlight)
 {
 	// in shared memory:
 	bool *is_finished = new bool(false);
@@ -26,7 +26,14 @@ void run_simulation(int highlight, int y_max, int x_max)
 	std::thread sim_thread(simulation, std::move(sim_exit_code), is_finished, current_timestep, current_population, cum_population);
 	
 	// create window for displaying simulation progress
-	WINDOW *simwin = newwin(6, x_max-12, y_max-8, 5);
+	int y_max, x_max;
+	getmaxyx(stdscr, y_max, x_max);
+	int n_lines  =  7;
+	int n_cols   = 70;
+	int begin_y  =  1;
+	int begin_x  =  1;
+	WINDOW *simwin = newwin(n_lines, n_cols, begin_y, begin_x);
+	//WINDOW *simwin = newwin(6, x_max-12, y_max-8, 5);
 	box(simwin, 0, 0);
 	//refresh();
 	wrefresh(simwin);
@@ -50,7 +57,8 @@ void run_simulation(int highlight, int y_max, int x_max)
 	sim_thread.join();
 
 	/* Review the simulation */
-	WINDOW *reviewwin = newwin(7, x_max-12, y_max-8, 5);
+	WINDOW *reviewwin = newwin(n_lines, n_cols, begin_y, begin_x);
+	//WINDOW *reviewwin = newwin(7, x_max-12, y_max-8, 5);
 	box(reviewwin, 0, 0);
 
 	switch (exit)
@@ -174,9 +182,15 @@ void display_new_val(WINDOW* editorwin, int position, int new_val)
 
 
 
-void edit_params(int y_max, int x_max)
+void edit_params()
 {
-	WINDOW *editorwin = newwin(20, x_max-12, y_max-22, 5);
+	int y_max, x_max;
+	getmaxyx(stdscr, y_max, x_max);
+	int n_lines  = 18;
+	int n_cols   = 70;
+	int begin_y  =  1;
+	int begin_x  =  1;
+	WINDOW *editorwin = newwin(n_lines, n_cols, begin_y, begin_x);
 	box(editorwin, 0, 0);
 	refresh();
 	wrefresh(editorwin);
@@ -284,10 +298,16 @@ void edit_params(int y_max, int x_max)
 
 
 
-int display_menu(int y_max, int x_max)
+int display_menu()
 {
 	// create window for out input
-	WINDOW *menuwin = newwin(6, x_max-12, y_max-8, 5);
+	int y_max, x_max;
+	getmaxyx(stdscr, y_max, x_max);
+	int n_lines  =  6;
+	int n_cols   = 60;
+	int begin_y  =  1;
+	int begin_x  =  1;
+	WINDOW *menuwin = newwin(n_lines, n_cols, begin_y, begin_x);
 	box(menuwin, 0, 0);
 	refresh();
 	wrefresh(menuwin);
