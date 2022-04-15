@@ -11,14 +11,6 @@ void create_output_files(std::map<std::string, int> config)
 
 	std::fstream file;
 
-	file.open("params.txt", std::ios::out);
-	file << "";
-	file.close();
-
-	file.open("params.txt", std::ios::out | std::ios::app);
-	file << "MAX_TIMESTEPS " << config["TIMESTEPS"] << std::endl;
-	file.close();
-
 	file.open("output.dat", std::ios::out);
 	file << "";
 	file.close();

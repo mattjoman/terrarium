@@ -19,11 +19,14 @@ tui/app.o: tui/app.cpp
 
 ## terrarium
 
-terrarium: cli/main.o
-	g++ -o terrarium cli/main.o
+terrarium: core/animal.o core/predator.o core/prey.o core/basic_funcs.o core/output.o core/birth.o core/simulation.o cli/main.o cli/app.o share/config.o
+	g++ -o terrarium core/animal.o core/predator.o core/prey.o core/basic_funcs.o core/output.o core/birth.o core/simulation.o cli/main.o cli/app.o share/config.o
 
 cli/main.o: cli/main.cpp
 	g++ -c -o cli/main.o cli/main.cpp
+
+cli/app.o: cli/app.cpp
+	g++ -c -o cli/app.o cli/app.cpp
 
 
 
@@ -58,6 +61,12 @@ core/simulation.o: core/simulation.cpp
 
 share/config.o: share/config.cpp
 	g++ -c -o share/config.o share/config.cpp
+
+
+
+
+install:
+	./install.sh
 
 
 clean:
