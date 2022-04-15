@@ -1,39 +1,69 @@
-all: animal.o predator.o prey.o basic_funcs.o output.o app.o birth.o config.o simulation.o main.o
-	g++ -lncurses -o terrarium animal.o predator.o prey.o basic_funcs.o output.o app.o birth.o config.o simulation.o main.o
+
+
+all: terr-tui terrarium
 
 
 
-main.o: main.cpp
-	g++ -c main.cpp
+## terr-tui
 
-animal.o: animal.cpp
-	g++ -c animal.cpp
+terr-tui: core/animal.o core/predator.o core/prey.o core/basic_funcs.o core/output.o core/birth.o core/simulation.o tui/main.o tui/app.o share/config.o
+	g++ -lncurses -o terr-tui core/animal.o core/predator.o core/prey.o core/basic_funcs.o core/output.o core/birth.o core/simulation.o tui/main.o tui/app.o share/config.o
 
-predator.o: predator.cpp
-	g++ -c predator.cpp
+tui/main.o: tui/main.cpp
+	g++ -c -o tui/main.o tui/main.cpp
 
-prey.o: prey.cpp
-	g++ -c prey.cpp
+tui/app.o: tui/app.cpp
+	g++ -c -o tui/app.o tui/app.cpp
 
-basic_funcs.o: basic_funcs.cpp
-	g++ -c basic_funcs.cpp
 
-output.o: output.cpp
-	g++ -c output.cpp
 
-app.o: app.cpp
-	g++ -c app.cpp
+## terrarium
 
-birth.o: birth.cpp
-	g++ -c birth.cpp
+terrarium: cli/main.o
+	g++ -o terrarium cli/main.o
 
-config.o: config.cpp
-	g++ -c config.cpp
+cli/main.o: cli/main.cpp
+	g++ -c -o cli/main.o cli/main.cpp
 
-simulation.o: simulation.cpp
-	g++ -c simulation.cpp
 
+
+
+## core
+
+core/animal.o: core/animal.cpp
+	g++ -c -o core/animal.o core/animal.cpp
+
+core/predator.o: core/predator.cpp
+	g++ -c -o core/predator.o core/predator.cpp
+
+core/prey.o: core/prey.cpp
+	g++ -c -o core/prey.o core/prey.cpp
+
+core/basic_funcs.o: core/basic_funcs.cpp
+	g++ -c -o core/basic_funcs.o core/basic_funcs.cpp
+
+core/output.o: core/output.cpp
+	g++ -c -o core/output.o core/output.cpp
+
+core/birth.o: core/birth.cpp
+	g++ -c -o core/birth.o core/birth.cpp
+
+core/simulation.o: core/simulation.cpp
+	g++ -c -o core/simulation.o core/simulation.cpp
+
+
+
+
+## share
+
+share/config.o: share/config.cpp
+	g++ -c -o share/config.o share/config.cpp
 
 
 clean:
-	rm *.o
+	rm share/*.o
+	rm tui/*.o
+	rm cli/*.o
+	rm core/*.o
+	rm terrarium
+	rm terr-tui

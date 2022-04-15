@@ -1,6 +1,6 @@
 #pragma once
 
-#include "includes.h"
+#include "../share/includes.h"
 #include "animal.h"
 #include "predator.h"
 #include "prey.h"

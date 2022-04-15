@@ -1,13 +1,12 @@
-#include "config.h"
-#include "includes.h"
+#include "../share/config.h"
 #include "animal.h"
 #include "predator.h"
 #include "prey.h"
 #include "basic_funcs.h"
 #include "birth.h"
 #include "output.h"
-#include <iostream>
 #include <future>
+#include "../share/includes.h"
 
 
 void new_animal(int &id, int index, Birth new_birth, Animal* animal_list[], std::map<std::string, int> config)

@@ -1,7 +1,7 @@
 #pragma once
 #include <fstream>
 #include <vector>
-#include "config.h"
+#include "../share/config.h"
 
 void create_output_files(std::map<std::string, int> config);
 

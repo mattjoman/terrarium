@@ -1,7 +1,6 @@
 #include <iostream>
 #include "animal.h"
 #include "basic_funcs.h"
-#include "config.h"
 
 
 Animal::Animal(int id_, std::vector<float> pos_, int min_death_age, int max_death_age) : id{id_}, pos{pos_}

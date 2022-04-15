@@ -4,6 +4,8 @@
  *	Mostly functions involving vector calculations.
  */
 #pragma once
+#include <vector>
+#include <cstddef>
 
 int rand_int(int from, int to, int seed);
 

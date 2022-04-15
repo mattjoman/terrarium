@@ -1,9 +1,9 @@
 #include "config.h"
-#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "includes.h"
+#include <map>
+#include <vector>
 
 std::map<std::string, int> read_config()
 {

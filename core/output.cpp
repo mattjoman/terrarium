@@ -1,7 +1,6 @@
 #include <fstream>
-#include <vector>
 #include "output.h"
-#include "includes.h"
+#include "../share/includes.h"
 
 void create_output_files(std::map<std::string, int> config)
 {

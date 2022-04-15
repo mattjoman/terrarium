@@ -3,8 +3,9 @@
  *	specific to this project.
  *	Mostly functions involving vector calculations.
  */
-#include "includes.h"
 #include "basic_funcs.h"
+#include "../share/includes.h"
+#include <cstddef>
 
 
 int rand_int(int from, int to, int seed)

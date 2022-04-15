@@ -3,8 +3,8 @@
 #include <chrono>
 #include <thread>
 #include <ncurses.h>
-#include "simulation.h"
-#include "config.h"
+#include "../core/simulation.h"
+#include "../share/config.h"
 #include "app.h"
 using namespace std;
 
