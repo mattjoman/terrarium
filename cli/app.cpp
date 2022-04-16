@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdio.h>
 #include <future>
 #include <chrono>
 #include <thread>
@@ -63,11 +64,30 @@ void run_simulation()
 
 void display_params()
 {
+	const int total_line_len = 28; // total length of lines displayed including separating white spaces
+	const int max_param_len  = 17; // length of longest parameter name
+	const int max_value_len  =  7; // length of longest allowed value
+
+	std::cout << std::endl;
+
 	std::map<std::string, int> config = read_config();
 	for (auto itr = config.begin(); itr != config.end(); itr++)
 	{
-		std::cout << (*itr).first << "\t\t" << (*itr).second << std::endl;
+		size_t param_len = (*itr).first.size();
+		int white_spaces = total_line_len - max_param_len - 1;
+
+		white_spaces += max_param_len - (int)param_len;
+
+		/* Adjust white_spaces according to number of digits in (*itr).second */
+		for (long long n = 10; n <= (*itr).second; n *= 10)
+			white_spaces--;
+
+		std::cout << (*itr).first;
+		for (int i = 0; i < white_spaces; i++)
+			putchar(' ');
+		std::cout << (*itr).second << std::endl;
 	}
+	std::cout << std::endl;
 }
 
 
@@ -78,9 +98,18 @@ void edit_param(std::string param_name, int new_value)
 	{
 		config[param_name] = new_value;
 		write_config(config);
+		std::cout << param_name << " set to " << new_value << std::endl;
 	}
 	else
 	{
 		std::cout << param_name << " is not a parameter" << std::endl;
 	}
+}
+
+
+void print_help()
+{
+	std::cout << "Description:" << std::endl;
+	std::cout << "Arguments:" << std::endl;
+	std::cout << "Examples:" << std::endl;
 }

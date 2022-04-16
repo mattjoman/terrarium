@@ -7,8 +7,8 @@ int main(int argc, char** argv)
 
 	if (argc < 2)
 	{
-		std::cout << "Help message..." << std::endl;
 		/* Run help function */
+		print_help();
 		exit(0);
 	}
 
@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 			if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)
 			{
 				/* Call function print_help() and exit */
-				std::cout << "Help message..." << std::endl;
+				print_help();
 				exit(0);
 			}
 			else if (strcmp(argv[1], "-d") == 0 || strcmp(argv[1], "--display-params") == 0)
