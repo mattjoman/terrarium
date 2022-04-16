@@ -4,59 +4,81 @@
 
 int main(int argc, char** argv)
 {
-	switch(argc)
+
+	if (argc < 2)
 	{
-		case 1:
-		{
-			/* Run simulation, write output to ./output.dat */
-			run_simulation();
-			break;
-		}
-
-		case 2:
-		{
-			if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0)
-			{
-				/* Print help/user-guide */
-				std::cout << "Help/user-guide coming soon..." << std::endl;
-			}
-			else if (strcmp(argv[1], "--show-config") == 0 || strcmp(argv[1], "-s") == 0)
-			{
-				/* Print current config */
-				std::cout << "Printing current config coming soon..." << std::endl;
-				display_params();
-			}
-			break;
-		}
-
-		case 3:
-		{
-			if (strcmp(argv[1], "--output-path") == 0 || strcmp(argv[1], "-o") == 0)
-			{
-				/* Run the simulation with the specified output file path */
-				if (argv[2][0] == '/' || argv[2][0] == '~')
-				{
-					/* Absolute path provided */
-					std::cout << "Absolute output paths coming soon..." << std::endl;
-				}
-				else
-				{
-					/* Relative path provided */
-					std::cout << "Relative output paths coming soon..." << std::endl;
-				}
-			}
-			else if (strcmp(argv[1], "--update-param") == 0 || strcmp(argv[1], "-u") == 0)
-			{
-				std::string param = argv[2];
-				update_param(param);
-			}
-			break;
-		}
-
-		default:
-		{
-			break;
-		}
+		std::cout << "Help message..." << std::endl;
+		/* Run help function */
+		exit(0);
 	}
-	return 0;
+
+
+
+
+	if (strcmp(argv[1], "run") == 0)
+	{
+		/* Command is terrarium run */
+		std::cout << "Preparing to run simulation..." << std::endl;
+		/* Prepare and run the simulation... */
+
+		run_simulation();
+
+
+		exit(0);
+	}
+
+
+
+
+	/* Command is terrarium (don't run) */
+
+	switch (argc)
+	{
+		case 2:
+			if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)
+			{
+				/* Call function print_help() and exit */
+				std::cout << "Help message..." << std::endl;
+				exit(0);
+			}
+			else if (strcmp(argv[1], "-d") == 0 || strcmp(argv[1], "--display-params") == 0)
+			{
+				/* Call function display_params() and exit */
+				display_params();
+				exit(0);
+			}
+			else
+			{
+				std::cout << "Error" << std::endl;
+				exit(1);
+			}
+			break;
+		case 3:
+			if (strcmp(argv[1], "-e") == 0 || strcmp(argv[1], "--edit-param") == 0)
+			{
+				/* Get the arg and split it into 'param_name' and 'new_value' */
+				std::string arg = argv[2];
+				std::size_t equals = arg.find("=");
+				std::string param_name = arg.substr(0, equals);
+				std::string new_value_str = arg.substr(equals+1);
+				int new_value = std::stoi(new_value_str);
+				for (int i = 0; i < param_name.size(); i++)
+				{
+					param_name[i] = std::toupper((int)param_name[i]);
+				}
+				edit_param(param_name, new_value);
+			}
+			else
+			{
+				std::cout << "Error" << std::endl;
+				exit(1);
+			}
+			break;
+		default:
+			std::cout << "Invalid number of arguments" << std::endl;
+			exit(1);
+			break;
+	}
+
+	return 1;
 }

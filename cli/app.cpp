@@ -71,17 +71,9 @@ void display_params()
 }
 
 
-void update_param(std::string param)
+void edit_param(std::string param_name, int new_value)
 {
-	std::size_t equals = param.find("=");
-	std::string param_name = param.substr(0, equals);
-	std::string new_value_str = param.substr(equals+1);
-	int new_value = std::stoi(new_value_str);
 	std::map<std::string, int> config = read_config();
-	for (int i = 0; i < param_name.size(); i++)
-	{
-		param_name[i] = std::toupper((int)param_name[i]);
-	}
 	if (config.count(param_name))
 	{
 		config[param_name] = new_value;

@@ -1,8 +1,8 @@
 #include <iostream>
-#include <ncurses.h>
+#include <string>
 
 void run_simulation();
 
 void display_params();
 
-void update_param(std::string param);
+void edit_param(std::string param_name, int new_val);
