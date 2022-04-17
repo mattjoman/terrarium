@@ -1,18 +1,78 @@
 #include <iostream>
 #include <stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <future>
 #include <chrono>
 #include <thread>
 #include <string>
+#include <cstring>
 #include <map>
 #include "../core/simulation.h"
 #include "../share/config.h"
 #include "app.h"
 
 
-
-void run_simulation()
+int is_dir(const char *path)
 {
+   struct stat statbuf;
+   if (stat(path, &statbuf) != 0)
+       return 0;
+   return S_ISDIR(statbuf.st_mode);
+}
+
+
+std::string create_output_path(const char* output_path)
+{
+	std::string new_path;
+	switch (output_path[0])
+	{
+		case '/':
+		{
+			new_path = output_path;
+			if (is_dir(output_path))
+			{
+				if (new_path.back() != '/')
+				{
+					new_path += '/';
+				}
+				new_path += "output.dat";
+			}
+			break;
+		}
+		default:
+		{
+			char cwd[64];
+			getcwd(cwd, sizeof(cwd));
+			new_path += cwd;
+			new_path += '/';
+			new_path += output_path;
+			char new_path_array[new_path.size()+1];
+			strcpy(new_path_array, new_path.c_str());
+
+			if (is_dir(new_path_array))
+			{
+				if (new_path.back() != '/')
+				{
+					new_path += '/';
+				}
+				new_path += "output.dat";
+			}
+			break;
+		}
+	}
+	return new_path;
+}
+
+
+
+void run_simulation(const char* output_path_arg)
+{
+	/* Process the output path */
+	std::string output_path = create_output_path(output_path_arg);
+	std::cout << output_path << std::endl;
+
 	// in shared memory:
 	bool *is_finished = new bool(false);
 	int *current_timestep = new int(0);
@@ -24,7 +84,7 @@ void run_simulation()
 	std::future<int> sim_exit_code_future = sim_exit_code.get_future();
 	
 	// start simulation
-	std::thread sim_thread(simulation, std::move(sim_exit_code), is_finished, current_timestep, current_population, cum_population);
+	std::thread sim_thread(simulation, std::move(sim_exit_code), is_finished, current_timestep, current_population, cum_population, output_path);
 	
 	while (!*is_finished)
 	{

@@ -12,6 +12,9 @@ using namespace std;
 
 void run_simulation(int highlight)
 {
+	/* Specify output path */
+	std::string output_path = "output.dat";
+
 	// in shared memory:
 	bool *is_finished = new bool(false);
 	int *current_timestep = new int(0);
@@ -23,7 +26,7 @@ void run_simulation(int highlight)
 	std::future<int> sim_exit_code_future = sim_exit_code.get_future();
 	
 	// start simulation
-	std::thread sim_thread(simulation, std::move(sim_exit_code), is_finished, current_timestep, current_population, cum_population);
+	std::thread sim_thread(simulation, std::move(sim_exit_code), is_finished, current_timestep, current_population, cum_population, output_path);
 	
 	// create window for displaying simulation progress
 	int y_max, x_max;

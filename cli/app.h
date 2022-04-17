@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
 
-void run_simulation();
+std::string create_output_path(const char* output_path);
+
+void run_simulation(const char* output_path);
 
 void display_params();
 

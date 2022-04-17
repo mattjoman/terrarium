@@ -75,13 +75,13 @@ bool is_in_kill_list(int element, int kill_list[DEATH_LIST_LENGTH], int kill_cou
 
 
 
-void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *current_timestep, int *current_population, int *cum_population)
+void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *current_timestep, int *current_population, int *cum_population, std::string output_path)
 {
 	// read config
 	std::map<std::string, int> config = read_config();	
 
 	// initialising
-	create_output_files(config);
+	create_output_files(config, output_path);
 	int id = 0; // initial id
 	int n_living = 0;
 	Animal* animal_list[ANIMAL_LIST_LENGTH];
@@ -97,7 +97,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 	for (int t=0; t < config["TIMESTEPS"]; t++)
 	{
 		/* Add the timestep, cum pop, pop to the output file */
-		append_timestep_info(t, id, n_living);
+		append_timestep_info(t, id, n_living, output_path);
 
 		/* reset kill and birth counters for the timestep */
 		int kill_count = 0;
@@ -121,7 +121,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 			/* Write to files */
 			bool is_last_animal = false;
 			if (a == n_living-1) { is_last_animal = true; }
-			append_animal_info(is_last_animal, animal_a->id, animal_a->type, animal_a->pos);
+			append_animal_info(is_last_animal, animal_a->id, animal_a->type, animal_a->pos, output_path);
 
 
 			/* Add births to birth_list */
@@ -295,7 +295,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 		/* Break from simulation loop and add empty line to output file (pop 0) */
 		if (n_living == 0)
 		{
-			append_timestep_info(final_timestep, id, n_living);
+			append_timestep_info(final_timestep, id, n_living, output_path);
 			*cum_population = id;
 			*is_finished = true;
 			sim_exit_code.set_value(2);
@@ -309,7 +309,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 
 
 	/* Add the timestep, cum pop, pop to the output file */
-	append_timestep_info(final_timestep, id, n_living);
+	append_timestep_info(final_timestep, id, n_living, output_path);
 
 	
 	/* Add survivors to output file and delete the animals */
@@ -318,7 +318,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 	{
 		if (i == n_living-1) { is_last_animal = true; }
 		Animal *animal = animal_list[i];
-		append_animal_info(is_last_animal, animal->id, animal->type, animal->pos);
+		append_animal_info(is_last_animal, animal->id, animal->type, animal->pos, output_path);
 		delete animal;
 	}
 

@@ -1,6 +1,12 @@
+#include <unistd.h>
+#include <stdio.h>
 #include <iostream>
 #include <string.h>
 #include "app.h"
+
+#define CWD_BUF_SIZE 64
+
+
 
 int main(int argc, char** argv)
 {
@@ -19,11 +25,19 @@ int main(int argc, char** argv)
 	{
 		/* Command is terrarium run */
 		std::cout << "Preparing to run simulation..." << std::endl;
+
 		/* Prepare and run the simulation... */
+		const char* output_path_arg = "output.dat";
 
-		run_simulation();
+		for (int i = 2; i < argc; i++)
+		{
+			if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--output-path") == 0)
+			{
+				output_path_arg = argv[i+1];
+			}
+		}
 
-
+		run_simulation(output_path_arg);
 		exit(0);
 	}
 
