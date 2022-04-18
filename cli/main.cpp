@@ -14,7 +14,9 @@ int main(int argc, char** argv)
 	if (argc < 2)
 	{
 		/* Run help function */
-		print_help();
+		std::string help_path = getenv("HOME");
+		help_path += "/.config/terrarium/help.txt";
+		print_file(help_path);
 		exit(0);
 	}
 
@@ -52,13 +54,23 @@ int main(int argc, char** argv)
 			if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)
 			{
 				/* Call function print_help() and exit */
-				print_help();
+				std::string help_path = getenv("HOME");
+				help_path += "/.config/terrarium/help.txt";
+				print_file(help_path);
 				exit(0);
 			}
 			else if (strcmp(argv[1], "-d") == 0 || strcmp(argv[1], "--display-params") == 0)
 			{
 				/* Call function display_params() and exit */
 				display_params();
+				exit(0);
+			}
+			else if (strcmp(argv[1], "-i") == 0 || strcmp(argv[1], "--info") == 0)
+			{
+				/* Call function display_params() and exit */
+				std::string info_path = getenv("HOME");
+				info_path += "/.config/terrarium/info.txt";
+				print_file(info_path);
 				exit(0);
 			}
 			else

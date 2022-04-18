@@ -1,0 +1,80 @@
++-----------+
+| TERRARIUM |
++-----------+
+
+
+INTRODUCTION
+---------------------
+Terrarium is a program that simulates an ecosystem with two species of animal - predators and prey.
+
+
+SIMULATION RULES
+---------------------
+Breeding:
+	Animals can breed with others of the same species.
+	After a pregnancy period a pregnant animal will give birth to a child of the same species.
+	The child will spawn at a random location within a certain radius of the parent at the time of birth.
+	During the pregnancy period animals cannot breed.
+
+Eating:
+	Predators can eat prey and will die of hunger if they don't eat.
+	Prey cannot eat or die of hunger.
+
+Age:
+	Both species can die of old age.
+	The maximum age an animal can live to is defined at birth, and is random within a certain range.
+
+Position:
+	This simulation uses a euclidian coordinate system.
+	At the start the initial positions of animals are random within a certain radius of the origin (0, 0).
+	Each timestep an animal will move a distance of 1 unit in a random direction.
+	Interactions between animals occur when they happen to be near each other.
+
+Time:
+	The simulation runs for an integer number of timesteps.
+	Within each timestep the animals are only updated once the relevant information for all the animals has been calculated.
+	This ensures that the state of the simulation is the same from the perspectives of all the animals while the information needed to transition to the next state is calculated.
+
+
+SIMULATION PARAMETERS
+---------------------
+BREEDING_DISTANCE:
+	Maximum distance between animals for breeding to be possible.
+
+INITIAL_PREDATORS:
+	Initial number of predators.
+
+INITIAL_PREY:
+	Initial number of prey.
+
+MAX_DEATHS:
+	Maximum deaths that can happen in a timestep.
+
+MAX_DEATH_AGE:
+	Upper limit of the range of possible lifespans for an animal.
+	
+MAX_HUNGER:
+	The maximum hunger a predator can experience before it dies.
+
+MAX_POPULATION:
+	Maximum total population.
+	If this number is exceeded, the simulation will exit.
+	Make this big to melt your cpu.
+
+MIN_DEATH_AGE:
+	Lower limit of the range of possible lifespans for an animal.
+
+MUNCHING_DISTANCE:
+	Maximum distance from which a predator can eat a prey.
+
+PREGNANCY_PERIOD:
+	Timesteps from breeding to birth.
+
+SPAWN_RADIUS:
+	New animals spawn at a random location within a circle with radius=SPAWN_RADIUS.
+	For the first animals at t=0, the center of the circle is (0, 0).
+	For subsequent new animals the center of the circle is the position of the parent animal at the time of birth.
+
+TIMESTEPS:
+	The maximum number of timesteps that the simulation will run for.
+	It will stop early if MAX_DEATHS or MAX_POPULATION are exceeded, or if the population is zero.

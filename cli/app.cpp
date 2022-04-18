@@ -167,10 +167,16 @@ void edit_param(std::string param_name, int new_value)
 	}
 }
 
-
-void print_help()
+void print_file(std::string file_path)
 {
-	std::cout << "Description:" << std::endl;
-	std::cout << "Arguments:" << std::endl;
-	std::cout << "Examples:" << std::endl;
+	std::fstream file;
+	file.open(file_path, std::ios::in);
+	if (file.is_open())
+	{
+		std::string line;
+		while (getline(file, line))
+		{
+			std::cout << line << std::endl;
+		}
+	}
 }

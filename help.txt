@@ -1,0 +1,25 @@
+Usage:  terrarium [COMMAND] [OPTIONS...]
+        terrarium [OPTION...]
+
+Commands:
+	run [OPTIONS...]                   Runs the simulation using
+	                                   the params from
+	                                   ~/.config/terrarium/config.dat.
+
+terrarium run options:
+	(-o | --output-path) PATH          Specify path to output file.
+	                                   Default is ./output.dat.
+
+terrarium options:
+	Note: Only use one option at a time.
+	-d | --display-params              Display current simulation
+	                                   params.
+	(-e | --edit-param) PARAM=VALUE    Edit value of a
+	                                   parameter.
+	-h | --help                        Print this text.
+
+Examples:
+	terrarium run
+	terrarium run -o ../somefile.txt
+	terrarium -e TIMESTEPS=100
+	terrarium -d
