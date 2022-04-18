@@ -86,12 +86,11 @@ void run_simulation(const char* output_path_arg)
 	// start simulation
 	std::thread sim_thread(simulation, std::move(sim_exit_code), is_finished, current_timestep, current_population, cum_population, output_path);
 	
+	std::map<std::string, int> config = read_config();
+	std::cout << std::endl;
 	while (!*is_finished)
 	{
-		/*
-		std::cout << "Timestep: " << *current_timestep << std::endl;
-		std::cout << "Population: " << *current_population << std::endl;
-		*/
+		std::cout << "Timestep: " << *current_timestep << "/" << config["TIMESTEPS"] << "\tPopulation: " << *current_population << "\r" << std::flush;
 		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 	}
 
@@ -99,6 +98,7 @@ void run_simulation(const char* output_path_arg)
 	sim_thread.join();
 
 	/* Review the simulation */
+	std::cout << std::endl;
 	switch (exit)
 	{
 	case 0:
@@ -113,6 +113,7 @@ void run_simulation(const char* output_path_arg)
 	default:
 		break;
 	}
+	std::cout << std::endl;
 
 	/* Clean up heap variables */
 	delete is_finished;
