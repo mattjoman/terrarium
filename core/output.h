@@ -13,4 +13,4 @@ void append_animal_info(
 		std::string					output_path
 		);
 
-void append_timestep_info(int timestep, int id, int n_living, std::string output_path);
+void append_timestep_info(int timestep, int id, int n_living, int n_preds, int n_prey, std::string output_path);

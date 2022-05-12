@@ -56,6 +56,8 @@ void append_timestep_info(
 		int 				timestep,
 		int 				id,
 		int 				n_living,
+		int					n_preds,
+		int					n_prey,
 		std::string	output_path
 		)
 {
@@ -65,7 +67,7 @@ void append_timestep_info(
 	std::fstream file;
 
 	file.open(output_path, std::ios::out | std::ios::app);
-	file << timestep << " " << id << " " << n_living << std::endl;
+	file << timestep << " " << id << " " << n_living << " " << n_preds << " " << n_prey << std::endl;
 	file.close();
 
 	return;
