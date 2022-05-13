@@ -7,9 +7,11 @@
 #include "output.h"
 #include <future>
 #include "../share/includes.h"
+#include "sim_data.h"
 
 
-void new_animal(int &id, int index, Birth new_birth, Animal* animal_list[], std::map<std::string, int> config)
+
+void new_animal(int id, int index, Birth new_birth, Animal* animal_list[], std::map<std::string, int> config)
 {
 	if (new_birth.type == "predator")
 	{
@@ -20,28 +22,29 @@ void new_animal(int &id, int index, Birth new_birth, Animal* animal_list[], std:
 		Prey* animal = new Prey(id, new_birth.pos, config["MIN_DEATH_AGE"], config["MAX_DEATH_AGE"]);
 		animal_list[index] = animal;
 	}
-	id++;
 	return;
 }
 
 
-void init_animals(int &id, int &n_living, Animal* animal_list[], std::map<std::string, int> config)
+void init_animals(Simulation_Data &s_data, Animal* animal_list[], std::map<std::string, int> config)
 {
 	for (int i = 0; i < config["INITIAL_PREDATORS"]; i++)
 	{
 		std::string type = "predator";
 		std::vector<float> pos = rand_vector(0, config["SPAWN_RADIUS"]);
 		Birth new_birth(type, pos);
-		new_animal(id, n_living, new_birth, &animal_list[0], config);
-		n_living++;
+		new_animal(s_data.id, s_data.n_living, new_birth, &animal_list[0], config);
+		s_data.n_living++;
+		s_data.id++;
 	}
 	for (int i = 0; i < config["INITIAL_PREY"]; i++)
 	{
 		std::string type = "prey";
 		std::vector<float> pos = rand_vector(0, config["SPAWN_RADIUS"]);
 		Birth new_birth(type, pos);
-		new_animal(id, n_living, new_birth, &animal_list[0], config);
-		n_living++;
+		new_animal(s_data.id, s_data.n_living, new_birth, &animal_list[0], config);
+		s_data.n_living++;
+		s_data.id++;
 	}
 	return;
 }
@@ -75,35 +78,43 @@ bool is_in_kill_list(int element, int kill_list[DEATH_LIST_LENGTH], int kill_cou
 
 
 
+
+
+
 void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *current_timestep, int *current_population, int *cum_population, std::string output_path)
 {
 	// read config
 	std::map<std::string, int> config = read_config();	
-
-	// initialising
 	create_output_files(config, output_path);
-	int id       = 0; // initial id
-	int n_living = 0;
-	int n_preds  = config["INITIAL_PREDATORS"];
-	int n_prey   = config["INITIAL_PREY"];
+
+	// initialising simulation data data
+	Simulation_Data s_data;
+
+	s_data.n_preds        = config["INITIAL_PREDATORS"];
+	s_data.n_prey         = config["INITIAL_PREY"];
+	s_data.id             = 0;
+	s_data.n_living       = 0;
+	s_data.kill_count     = 0;
+	s_data.birth_count    = 0;
+	s_data.final_timestep = 0;                         // record the last timestep (for output file)
+
 	Animal* animal_list[ANIMAL_LIST_LENGTH];
-	int kill_list[DEATH_LIST_LENGTH]; // animals to kill this timestep
+	int kill_list[DEATH_LIST_LENGTH];                  // animals to kill this timestep
 	std::vector<Birth> birth_list;
-	int final_timestep = 0; // record the last timestep (for output file)
 
 	// make initial predators and prey
-	init_animals(id, n_living, &animal_list[0], config);
+	init_animals(s_data, &animal_list[0], config);
 
 
 	// main simulation loop
 	for (int t=0; t < config["TIMESTEPS"]; t++)
 	{
 		/* Add the timestep, cum pop, pop to the output file */
-		append_timestep_info(t, id, n_living, n_preds, n_prey, output_path);
+		append_timestep_info(t, s_data, output_path);
 
 		/* reset kill and birth counters for the timestep */
-		int kill_count = 0;
-		int birth_count = 0;
+		s_data.kill_count = 0;
+		s_data.birth_count = 0;
 
 
 
@@ -114,7 +125,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 
 
 		/* Calculation loop */
-		for (int a=0; a<n_living; a++)
+		for (int a=0; a < s_data.n_living; a++)
 		{
 
 			Animal* animal_a = animal_list[a];
@@ -122,7 +133,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 
 			/* Write to files */
 			bool is_last_animal = false;
-			if (a == n_living-1) { is_last_animal = true; }
+			if (a == s_data.n_living-1) { is_last_animal = true; }
 			//append_animal_info(is_last_animal, animal_a->id, animal_a->type, animal_a->pos, output_path);
 
 
@@ -131,13 +142,13 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 			{
 				Birth new_birth(animal_a->type, animal_a->pos);
 				birth_list.push_back(new_birth);
-				birth_count++;
+				s_data.birth_count++;
 			}
 
 
 
 			/* Interactions with other animals */
-			for (int b=0; b<n_living; b++)
+			for (int b=0; b < s_data.n_living; b++)
 			{
 
 				Animal* animal_b = animal_list[b];
@@ -171,11 +182,11 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 							if (animal_a->is_hungry())
 							{
 
-								if (!is_in_kill_list(b, kill_list, kill_count))
+								if (!is_in_kill_list(b, kill_list, s_data.kill_count))
 								{
 									/* Add munched prey to kill list if not already on it */
-									kill_list[kill_count] = b;
-									kill_count++;
+									kill_list[s_data.kill_count] = b;
+									s_data.kill_count++;
 									animal_a->eat();
 								}
 							}
@@ -199,18 +210,18 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 
 
 		/* Add old or starved animals to the kill_list */
-		for (int a = 0; a < n_living; a++)
+		for (int a = 0; a < s_data.n_living; a++)
 		{
-			if (!is_in_kill_list(a, kill_list, kill_count))
+			if (!is_in_kill_list(a, kill_list, s_data.kill_count))
 			{
 				if (animal_list[a]->age >= animal_list[a]->death_age)
 				{
-					kill_list[kill_count] = a;
-					kill_count++;
+					kill_list[s_data.kill_count] = a;
+					s_data.kill_count++;
 				} else if (animal_list[a]->hunger >= config["MAX_HUNGER"])
 				{
-					kill_list[kill_count] = a;
-					kill_count++;
+					kill_list[s_data.kill_count] = a;
+					s_data.kill_count++;
 				}
 			}
 		}
@@ -220,14 +231,14 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 
 
 		/* Guard against overpopulating animal_list */
-		if (n_living + birth_count - kill_count >= config["MAX_POPULATION"])
+		if (s_data.n_living + s_data.birth_count - s_data.kill_count >= config["MAX_POPULATION"])
 		{
-			for (int a = 0; a < n_living; a++)
+			for (int a = 0; a < s_data.n_living; a++)
 			{
 				delete animal_list[a];
 			}
 			/* Return the exit code to the main thread */
-			*cum_population = id;
+			*cum_population = s_data.id;
 			*is_finished = true;
 			sim_exit_code.set_value(1);
 			return;
@@ -238,27 +249,28 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 
 
 		/* Birth and death loop */
-		while (kill_count>0)
+		while (s_data.kill_count>0)
 		{
 
 			/* Used to keep kill_list correct */
-			int tmp1 = n_living - 1;
-			int tmp2 = kill_count - 1;
+			int tmp1 = s_data.n_living - 1;
+			int tmp2 = s_data.kill_count - 1;
 
-			erase_animal(kill_list[kill_count-1], &animal_list[0]);
-			n_living--;
-			if (birth_count>0)
+			erase_animal(kill_list[s_data.kill_count-1], &animal_list[0]);
+			s_data.n_living--;
+			if (s_data.birth_count>0)
 			{
 				Birth new_birth = *(birth_list.end()-1);
-				new_animal(id, kill_list[kill_count-1], new_birth, &animal_list[0], config);
+				new_animal(s_data.id, kill_list[s_data.kill_count-1], new_birth, &animal_list[0], config);
 				birth_list.pop_back();
-				n_living++;
-				birth_count--;
+				s_data.n_living++;
+				s_data.id++;
+				s_data.birth_count--;
 			}
 			else
 			{
-				animal_list[kill_list[kill_count-1]] = animal_list[n_living];
-				for (int k = 0; k < kill_count; k++)
+				animal_list[kill_list[s_data.kill_count-1]] = animal_list[s_data.n_living];
+				for (int k = 0; k < s_data.kill_count; k++)
 				{
 					if (kill_list[k] == tmp1)
 					{
@@ -267,44 +279,45 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 					}
 				}
 			}
-			kill_count--;
+			s_data.kill_count--;
 		}
-		while (birth_count>0)
+		while (s_data.birth_count>0)
 		{
 			Birth new_birth = *(birth_list.end()-1);
-			new_animal(id, n_living, new_birth, &animal_list[0], config);
+			new_animal(s_data.id, s_data.n_living, new_birth, &animal_list[0], config);
 			birth_list.pop_back();
-			n_living++;
-			birth_count--;
+			s_data.n_living++;
+			s_data.id++;
+			s_data.birth_count--;
 		}
 		birth_list.clear();
 
 
 		/* Update loop */
-		n_preds = 0;
-		n_prey  = 0;
-		for (int a=0; a<n_living; a++)
+		s_data.n_preds = 0;
+		s_data.n_prey  = 0;
+		for (int a=0; a < s_data.n_living; a++)
 		{
 			animal_list[a]->update();
 			if (animal_list[a]->type == "predator")
-				n_preds++;
+				s_data.n_preds++;
 			else
-				n_prey++;
+				s_data.n_prey++;
 		}
 
 
 
 		// just use *current_timestep
-		final_timestep++;
+		s_data.final_timestep++;
 		*current_timestep = t;
-		*current_population = n_living;
+		*current_population = s_data.n_living;
 
 
 		/* Break from simulation loop and add empty line to output file (pop 0) */
-		if (n_living == 0)
+		if (s_data.n_living == 0)
 		{
-			append_timestep_info(final_timestep, id, n_living, n_preds, n_prey, output_path);
-			*cum_population = id;
+			append_timestep_info(t, s_data, output_path);
+			*cum_population = s_data.id;
 			*is_finished = true;
 			sim_exit_code.set_value(2);
 			return;
@@ -317,21 +330,21 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 
 
 	/* Add the timestep, cum pop, pop to the output file */
-	append_timestep_info(final_timestep, id, n_living, n_preds, n_prey, output_path);
+	append_timestep_info(s_data.final_timestep, s_data, output_path);
 
 	
 	/* Add survivors to output file and delete the animals */
 	bool is_last_animal = false;
-	for (int i = 0; i < n_living; i++)
+	for (int i = 0; i < s_data.n_living; i++)
 	{
-		if (i == n_living-1) { is_last_animal = true; }
+		if (i == s_data.n_living-1) { is_last_animal = true; }
 		Animal *animal = animal_list[i];
 		//append_animal_info(is_last_animal, animal->id, animal->type, animal->pos, output_path);
 		delete animal;
 	}
 
 	/* Return the exit code to the main thread */
-	*cum_population = id;
+	*cum_population = s_data.id;
 	*is_finished = true;
 	sim_exit_code.set_value(0);
 	return;

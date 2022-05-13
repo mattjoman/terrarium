@@ -1,5 +1,6 @@
 #include <fstream>
 #include "output.h"
+#include "sim_data.h"
 #include "../share/includes.h"
 
 void create_output_files(std::map<std::string, int> config, std::string output_path)
@@ -52,22 +53,15 @@ void append_animal_info(
 
 
 
-void append_timestep_info(
-		int 				timestep,
-		int 				id,
-		int 				n_living,
-		int					n_preds,
-		int					n_prey,
-		std::string	output_path
-		)
+void append_timestep_info(int t, Simulation_Data s_data, std::string output_path)
 {
 	/*
-	 * Write timestep info (timestep, cup pop, population, prey/predator populations)
+	 * Write timestep info (timestep, cum pop, population, prey/predator populations)
 	 */
 	std::fstream file;
 
 	file.open(output_path, std::ios::out | std::ios::app);
-	file << timestep << " " << id << " " << n_living << " " << n_preds << " " << n_prey << std::endl;
+	file << t << " " << s_data.id << " " << s_data.n_living << " " << s_data.n_preds << " " << s_data.n_prey << std::endl;
 	file.close();
 
 	return;

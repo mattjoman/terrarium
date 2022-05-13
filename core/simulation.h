@@ -7,21 +7,57 @@
 #include "basic_funcs.h"
 #include "birth.h"
 #include "output.h"
+#include "sim_data.h"
 #include <iostream>
 #include <future>
 
 
 
-void new_animal(int &id, int index, Birth new_birth, Animal* animal_list[], std::map<std::string, int> config);
+/*
+ * Creates a new Animal* and puts it in animal_list[index].
+ * Does not update any other simulation data.
+ */
+void new_animal(
+		int                        id,
+		int                        index,
+		Birth                      new_birth,
+		Animal*                    animal_list[],
+		std::map<std::string, int> config
+		);
 
-void init_animals(int &id, int &n_living, Animal* animal_list[], std::map<std::string, int> config);
 
+
+/*
+ * Initialises the first predators and prey.
+ * s_data.id and s_data.n_living are updated.
+ * Calls new_animal() the required number of times for predators and prey.
+ */
+void init_animals(
+		Simulation_Data            &s_data,
+		Animal*                    animal_list[],
+		std::map<std::string, int> config
+		);
+
+
+
+/*
+ */
 void erase_animal(int index, Animal* animal_list[]);
 
+/*
+ */
 bool is_in_kill_list(int element, int kill_list[DEATH_LIST_LENGTH], int kill_count);
 
-/* Runs the simulation */
-void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *current_timestep, int *current_population, int *cum_population, std::string output_path);
+/*
+ */
+void simulation(
+		std::promise<int>&& sim_exit_code,
+		bool                *is_finished,
+		int                 *current_timestep,
+		int                 *current_population,
+		int                 *cum_population,
+		std::string         output_path
+		);
 
 
 

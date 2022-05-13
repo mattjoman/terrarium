@@ -1,6 +1,7 @@
 #pragma once
 #include <fstream>
 #include <vector>
+#include "sim_data.h"
 #include "../share/config.h"
 
 void create_output_files(std::map<std::string, int> config, std::string output_path);
@@ -13,4 +14,4 @@ void append_animal_info(
 		std::string					output_path
 		);
 
-void append_timestep_info(int timestep, int id, int n_living, int n_preds, int n_prey, std::string output_path);
+void append_timestep_info(int t, Simulation_Data s_data, std::string output_path);
