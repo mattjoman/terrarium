@@ -60,6 +60,33 @@ void do_births_and_deaths(
 		);
 
 /*
+ * add
+ */
+void animal_interactions(
+		Simulation_Data &s_data,
+		int* kill_list,
+		Animal** animal_list,
+		std::vector<Birth> &birth_list,
+		std::map<std::string, int> config
+		);
+
+void old_and_hungry(
+		Simulation_Data &s_data,
+		int* kill_list,
+		Animal** animal_list,
+		std::map<std::string, int> config
+		);
+
+void update_animals(Simulation_Data& s_data, Animal** animal_list);
+
+void prepare_for_exit(
+		Simulation_Data& s_data,
+		bool* is_finished,
+		int* cum_population
+		);
+
+
+/*
  */
 void simulation(
 		std::promise<int>&& sim_exit_code,

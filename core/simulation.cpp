@@ -90,11 +90,8 @@ void do_births_and_deaths(
 {
 	while (s_data.kill_count>0)
 	{
-
-		/* Used to keep kill_list correct */
 		int tmp1 = s_data.n_living - 1;
 		int tmp2 = s_data.kill_count - 1;
-
 		erase_animal(kill_list[s_data.kill_count-1], animal_list);
 		s_data.n_living--;
 		if (s_data.birth_count>0)
@@ -139,15 +136,132 @@ void do_births_and_deaths(
 
 
 
+void animal_interactions(
+		Simulation_Data &s_data,
+		int* kill_list,
+		Animal** animal_list,
+		std::vector<Birth> &birth_list,
+		std::map<std::string, int> config
+		)
+{
+	for (int a=0; a < s_data.n_living; a++)
+	{
+		Animal* animal_a = animal_list[a];
+
+		/* Add births to birth_list */
+		if (animal_a->is_due())
+		{
+			Birth new_birth(animal_a->type, animal_a->pos);
+			birth_list.push_back(new_birth);
+			s_data.birth_count++;
+		}
+
+		/* Interactions with other animals */
+		for (int b=0; b < s_data.n_living; b++)
+		{
+			Animal* animal_b = animal_list[b];
+			if (animal_b->id != animal_a->id)
+			{
+				if (animal_a->type == animal_b->type)
+				{
+					if (scalar_difference(animal_a->pos, animal_b->pos) < config["BREEDING_DISTANCE"])
+					{
+						/* Breeding */
+						if (!animal_a->is_pregnant())
+						{
+							animal_a->conceive(config["PREGNANCY_PERIOD"]);
+						}
+					}
+				}
+				else if (animal_a->type == "predator")
+				{
+					if (scalar_difference(animal_a->pos, animal_b->pos) < config["MUNCHING_DISTANCE"])
+					{
+						/* Predator munches prey */
+						if (animal_a->is_hungry())
+						{
+							if (!is_in_kill_list(b, kill_list, s_data.kill_count))
+							{
+								/* Add munched prey to kill list if not already on it */
+								kill_list[s_data.kill_count] = b;
+								s_data.kill_count++;
+								animal_a->eat();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+
+
+void old_and_hungry(
+		Simulation_Data &s_data,
+		int* kill_list,
+		Animal** animal_list,
+		std::map<std::string, int> config
+		)
+{
+	for (int a = 0; a < s_data.n_living; a++)
+	{
+		if (!is_in_kill_list(a, kill_list, s_data.kill_count))
+		{
+			if (animal_list[a]->age >= animal_list[a]->death_age)
+			{
+				kill_list[s_data.kill_count] = a;
+				s_data.kill_count++;
+			} else if (animal_list[a]->hunger >= config["MAX_HUNGER"])
+			{
+				kill_list[s_data.kill_count] = a;
+				s_data.kill_count++;
+			}
+		}
+	}
+}
+
+
+
+void update_animals(Simulation_Data& s_data, Animal** animal_list)
+{
+	s_data.n_preds = 0;
+	s_data.n_prey  = 0;
+	for (int a=0; a < s_data.n_living; a++)
+	{
+		animal_list[a]->update();
+		if (animal_list[a]->type == "predator")
+			s_data.n_preds++;
+		else
+			s_data.n_prey++;
+	}
+}
+
+
+
+
+void prepare_for_exit(Simulation_Data& s_data, bool* is_finished, int* cum_population)
+{
+	*cum_population = s_data.id;
+	*is_finished = true;
+}
+
+
+
+
+
+
+
+
+
 
 
 void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *current_timestep, int *current_population, int *cum_population, std::string output_path)
 {
-	// read config
 	std::map<std::string, int> config = read_config();	
 	create_output_files(config, output_path);
 
-	// initialising simulation data data
 	Simulation_Data s_data;
 
 	s_data.n_preds        = config["INITIAL_PREDATORS"];
@@ -156,216 +270,58 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 	s_data.n_living       = 0;
 	s_data.kill_count     = 0;
 	s_data.birth_count    = 0;
-	s_data.final_timestep = 0;                         // record the last timestep (for output file)
 
 	Animal* animal_list[ANIMAL_LIST_LENGTH];
 	int kill_list[DEATH_LIST_LENGTH];                  // animals to kill this timestep
 	std::vector<Birth> birth_list;
 
-	// make initial predators and prey
 	init_animals(s_data, animal_list, config);
 
-
-	// main simulation loop
+	/* main simulation loop */
 	for (int t=0; t < config["TIMESTEPS"]; t++)
 	{
-		/* Add the timestep, cum pop, pop to the output file */
-		append_timestep_info(t, s_data, output_path);
-
-		/* reset kill and birth counters for the timestep */
 		s_data.kill_count = 0;
 		s_data.birth_count = 0;
 
+		append_timestep_info(t, s_data, output_path);
 
+		animal_interactions(s_data, kill_list, animal_list, birth_list, config);
+		old_and_hungry(s_data, kill_list, animal_list, config);
 
-
-
-
-
-
-
-		/* Calculation loop */
-		for (int a=0; a < s_data.n_living; a++)
-		{
-
-			Animal* animal_a = animal_list[a];
-
-
-			/* Write to files */
-			bool is_last_animal = false;
-			if (a == s_data.n_living-1) { is_last_animal = true; }
-			//append_animal_info(is_last_animal, animal_a->id, animal_a->type, animal_a->pos, output_path);
-
-
-			/* Add births to birth_list */
-			if (animal_a->is_due())
-			{
-				Birth new_birth(animal_a->type, animal_a->pos);
-				birth_list.push_back(new_birth);
-				s_data.birth_count++;
-			}
-
-
-
-			/* Interactions with other animals */
-			for (int b=0; b < s_data.n_living; b++)
-			{
-
-				Animal* animal_b = animal_list[b];
-
-				if (animal_b->id != animal_a->id)
-				{
-
-
-
-					if (animal_a->type == animal_b->type)
-					{
-						if (scalar_difference(animal_a->pos, animal_b->pos) < config["BREEDING_DISTANCE"])
-						{
-							/* Breeding */
-							if (!animal_a->is_pregnant())
-							{
-								animal_a->conceive(config["PREGNANCY_PERIOD"]);
-							}
-						}
-					}
-
-
-
-
-					else if (animal_a->type == "predator")
-					{
-						if (scalar_difference(animal_a->pos, animal_b->pos) < config["MUNCHING_DISTANCE"])
-						{
-							/* Predator munches prey */
-
-							if (animal_a->is_hungry())
-							{
-
-								if (!is_in_kill_list(b, kill_list, s_data.kill_count))
-								{
-									/* Add munched prey to kill list if not already on it */
-									kill_list[s_data.kill_count] = b;
-									s_data.kill_count++;
-									animal_a->eat();
-								}
-							}
-						}
-					}
-
-
-
-
-
-				}
-			}
-		} // end of calculation loop
-
-
-
-
-
-
-
-
-
-		/* Add old or starved animals to the kill_list */
-		for (int a = 0; a < s_data.n_living; a++)
-		{
-			if (!is_in_kill_list(a, kill_list, s_data.kill_count))
-			{
-				if (animal_list[a]->age >= animal_list[a]->death_age)
-				{
-					kill_list[s_data.kill_count] = a;
-					s_data.kill_count++;
-				} else if (animal_list[a]->hunger >= config["MAX_HUNGER"])
-				{
-					kill_list[s_data.kill_count] = a;
-					s_data.kill_count++;
-				}
-			}
-		}
-
-
-
-
-
-		/* Guard against overpopulating animal_list */
+		/* If there will be too many animals, exit before adding them to animal_list. */
 		if (s_data.n_living + s_data.birth_count - s_data.kill_count >= config["MAX_POPULATION"])
 		{
 			for (int a = 0; a < s_data.n_living; a++)
-			{
 				delete animal_list[a];
-			}
-			/* Return the exit code to the main thread */
-			*cum_population = s_data.id;
-			*is_finished = true;
+			prepare_for_exit(s_data, is_finished, cum_population);
 			sim_exit_code.set_value(1);
 			return;
 		}
 
-
-
-
-
-		/* Birth and death loop */
 		do_births_and_deaths(s_data, kill_list, animal_list, birth_list, config);
+		update_animals(s_data, animal_list);
 
-
-
-		/* Update loop */
-		s_data.n_preds = 0;
-		s_data.n_prey  = 0;
-		for (int a=0; a < s_data.n_living; a++)
-		{
-			animal_list[a]->update();
-			if (animal_list[a]->type == "predator")
-				s_data.n_preds++;
-			else
-				s_data.n_prey++;
-		}
-
-
-
-		// just use *current_timestep
-		s_data.final_timestep++;
-		*current_timestep = t;
+		*current_timestep = t + 1;
 		*current_population = s_data.n_living;
 
-
-		/* Break from simulation loop and add empty line to output file (pop 0) */
+		/* Exit early if everything is dead. */
 		if (s_data.n_living == 0)
 		{
 			append_timestep_info(t, s_data, output_path);
-			*cum_population = s_data.id;
-			*is_finished = true;
+			prepare_for_exit(s_data, is_finished, cum_population);
 			sim_exit_code.set_value(2);
 			return;
 		}
-
-
-
-
 	}
 
-
-	/* Add the timestep, cum pop, pop to the output file */
-	append_timestep_info(s_data.final_timestep, s_data, output_path);
-
+	append_timestep_info(*current_timestep, s_data, output_path);
 	
-	/* Add survivors to output file and delete the animals */
-	bool is_last_animal = false;
 	for (int i = 0; i < s_data.n_living; i++)
 	{
-		if (i == s_data.n_living-1) { is_last_animal = true; }
 		Animal* animal = animal_list[i];
-		//append_animal_info(is_last_animal, animal->id, animal->type, animal->pos, output_path);
 		delete animal;
 	}
-
-	/* Return the exit code to the main thread */
-	*cum_population = s_data.id;
-	*is_finished = true;
+	prepare_for_exit(s_data, is_finished, cum_population);
 	sim_exit_code.set_value(0);
 	return;
 }
