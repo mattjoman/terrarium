@@ -21,7 +21,7 @@ void new_animal(
 		int                        id,
 		int                        index,
 		Birth                      new_birth,
-		Animal*                    animal_list[],
+		Animal**                   animal_list,
 		std::map<std::string, int> config
 		);
 
@@ -34,7 +34,7 @@ void new_animal(
  */
 void init_animals(
 		Simulation_Data            &s_data,
-		Animal*                    animal_list[],
+		Animal**                    animal_list,
 		std::map<std::string, int> config
 		);
 
@@ -42,11 +42,22 @@ void init_animals(
 
 /*
  */
-void erase_animal(int index, Animal* animal_list[]);
+void erase_animal(int index, Animal** animal_list);
 
 /*
  */
 bool is_in_kill_list(int element, int kill_list[DEATH_LIST_LENGTH], int kill_count);
+
+/*
+ * add
+ */
+void do_births_and_deaths(
+		Simulation_Data &s_data,
+		int* kill_list,
+		Animal** animal_list,
+		std::vector<Birth> &birth_list,
+		std::map<std::string, int> config
+		);
 
 /*
  */

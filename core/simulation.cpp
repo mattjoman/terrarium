@@ -11,7 +11,7 @@
 
 
 
-void new_animal(int id, int index, Birth new_birth, Animal* animal_list[], std::map<std::string, int> config)
+void new_animal(int id, int index, Birth new_birth, Animal** animal_list, std::map<std::string, int> config)
 {
 	if (new_birth.type == "predator")
 	{
@@ -26,14 +26,14 @@ void new_animal(int id, int index, Birth new_birth, Animal* animal_list[], std::
 }
 
 
-void init_animals(Simulation_Data &s_data, Animal* animal_list[], std::map<std::string, int> config)
+void init_animals(Simulation_Data &s_data, Animal** animal_list, std::map<std::string, int> config)
 {
 	for (int i = 0; i < config["INITIAL_PREDATORS"]; i++)
 	{
 		std::string type = "predator";
 		std::vector<float> pos = rand_vector(0, config["SPAWN_RADIUS"]);
 		Birth new_birth(type, pos);
-		new_animal(s_data.id, s_data.n_living, new_birth, &animal_list[0], config);
+		new_animal(s_data.id, s_data.n_living, new_birth, animal_list, config);
 		s_data.n_living++;
 		s_data.id++;
 	}
@@ -42,7 +42,7 @@ void init_animals(Simulation_Data &s_data, Animal* animal_list[], std::map<std::
 		std::string type = "prey";
 		std::vector<float> pos = rand_vector(0, config["SPAWN_RADIUS"]);
 		Birth new_birth(type, pos);
-		new_animal(s_data.id, s_data.n_living, new_birth, &animal_list[0], config);
+		new_animal(s_data.id, s_data.n_living, new_birth, animal_list, config);
 		s_data.n_living++;
 		s_data.id++;
 	}
@@ -51,7 +51,7 @@ void init_animals(Simulation_Data &s_data, Animal* animal_list[], std::map<std::
 
 
 
-void erase_animal(int index, Animal* animal_list[])
+void erase_animal(int index, Animal** animal_list)
 {
 	delete animal_list[index]; // delete animal object
 	return;
@@ -71,6 +71,66 @@ bool is_in_kill_list(int element, int kill_list[DEATH_LIST_LENGTH], int kill_cou
 		}
 	}
 	return in_kill_list;
+}
+
+
+
+
+
+
+
+
+void do_births_and_deaths(
+		Simulation_Data &s_data,
+		int* kill_list,
+		Animal** animal_list,
+		std::vector<Birth> &birth_list,
+		std::map<std::string, int> config
+		)
+{
+	while (s_data.kill_count>0)
+	{
+
+		/* Used to keep kill_list correct */
+		int tmp1 = s_data.n_living - 1;
+		int tmp2 = s_data.kill_count - 1;
+
+		erase_animal(kill_list[s_data.kill_count-1], animal_list);
+		s_data.n_living--;
+		if (s_data.birth_count>0)
+		{
+			Birth new_birth = *(birth_list.end()-1);
+			new_animal(s_data.id, kill_list[s_data.kill_count-1], new_birth, animal_list, config);
+			birth_list.pop_back();
+			s_data.n_living++;
+			s_data.id++;
+			s_data.birth_count--;
+		}
+		else
+		{
+			animal_list[kill_list[s_data.kill_count-1]] = animal_list[s_data.n_living];
+			for (int k = 0; k < s_data.kill_count; k++)
+			{
+				if (kill_list[k] == tmp1)
+				{
+					kill_list[k] = tmp2;
+					break;
+				}
+			}
+		}
+		s_data.kill_count--;
+	}
+	while (s_data.birth_count>0)
+	{
+		Birth new_birth = *(birth_list.end()-1);
+		new_animal(s_data.id, s_data.n_living, new_birth, animal_list, config);
+		birth_list.pop_back();
+		s_data.n_living++;
+		s_data.id++;
+		s_data.birth_count--;
+	}
+	birth_list.clear();
+	return;
 }
 
 
@@ -103,7 +163,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 	std::vector<Birth> birth_list;
 
 	// make initial predators and prey
-	init_animals(s_data, &animal_list[0], config);
+	init_animals(s_data, animal_list, config);
 
 
 	// main simulation loop
@@ -249,48 +309,8 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 
 
 		/* Birth and death loop */
-		while (s_data.kill_count>0)
-		{
+		do_births_and_deaths(s_data, kill_list, animal_list, birth_list, config);
 
-			/* Used to keep kill_list correct */
-			int tmp1 = s_data.n_living - 1;
-			int tmp2 = s_data.kill_count - 1;
-
-			erase_animal(kill_list[s_data.kill_count-1], &animal_list[0]);
-			s_data.n_living--;
-			if (s_data.birth_count>0)
-			{
-				Birth new_birth = *(birth_list.end()-1);
-				new_animal(s_data.id, kill_list[s_data.kill_count-1], new_birth, &animal_list[0], config);
-				birth_list.pop_back();
-				s_data.n_living++;
-				s_data.id++;
-				s_data.birth_count--;
-			}
-			else
-			{
-				animal_list[kill_list[s_data.kill_count-1]] = animal_list[s_data.n_living];
-				for (int k = 0; k < s_data.kill_count; k++)
-				{
-					if (kill_list[k] == tmp1)
-					{
-						kill_list[k] = tmp2;
-						break;
-					}
-				}
-			}
-			s_data.kill_count--;
-		}
-		while (s_data.birth_count>0)
-		{
-			Birth new_birth = *(birth_list.end()-1);
-			new_animal(s_data.id, s_data.n_living, new_birth, &animal_list[0], config);
-			birth_list.pop_back();
-			s_data.n_living++;
-			s_data.id++;
-			s_data.birth_count--;
-		}
-		birth_list.clear();
 
 
 		/* Update loop */
@@ -338,7 +358,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 	for (int i = 0; i < s_data.n_living; i++)
 	{
 		if (i == s_data.n_living-1) { is_last_animal = true; }
-		Animal *animal = animal_list[i];
+		Animal* animal = animal_list[i];
 		//append_animal_info(is_last_animal, animal->id, animal->type, animal->pos, output_path);
 		delete animal;
 	}
