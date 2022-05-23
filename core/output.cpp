@@ -3,7 +3,7 @@
 #include "sim_data.h"
 #include "../share/includes.h"
 
-void create_output_files(std::map<std::string, int> config)
+void create_output_files()
 {
 	/*
 	 * Overwrite previous file, write the simulation params and

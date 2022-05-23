@@ -4,7 +4,7 @@
 #include "sim_data.h"
 #include "../share/config.h"
 
-void create_output_files(std::map<std::string, int> config);
+void create_output_files();
 
 void append_animal_info(
 		bool 								is_last_animal,

@@ -21,8 +21,7 @@ void new_animal(
 		int                        id,
 		int                        index,
 		Birth                      new_birth,
-		Animal**                   animal_list,
-		std::map<std::string, int> config
+		Animal**                   animal_list
 		);
 
 
@@ -34,8 +33,7 @@ void new_animal(
  */
 void init_animals(
 		Simulation_Data            &s_data,
-		Animal**                    animal_list,
-		std::map<std::string, int> config
+		Animal**                    animal_list
 		);
 
 
@@ -55,8 +53,7 @@ void do_births_and_deaths(
 		Simulation_Data &s_data,
 		int* kill_list,
 		Animal** animal_list,
-		std::vector<Birth> &birth_list,
-		std::map<std::string, int> config
+		std::vector<Birth> &birth_list
 		);
 
 /*
@@ -66,15 +63,13 @@ void animal_interactions(
 		Simulation_Data &s_data,
 		int* kill_list,
 		Animal** animal_list,
-		std::vector<Birth> &birth_list,
-		std::map<std::string, int> config
+		std::vector<Birth> &birth_list
 		);
 
 void old_and_hungry(
 		Simulation_Data &s_data,
 		int* kill_list,
-		Animal** animal_list,
-		std::map<std::string, int> config
+		Animal** animal_list
 		);
 
 void update_animals(Simulation_Data& s_data, Animal** animal_list);
