@@ -3,16 +3,17 @@
 #include "sim_data.h"
 #include "../share/includes.h"
 
-void create_output_files(std::map<std::string, int> config, std::string output_path)
+void create_output_files(std::map<std::string, int> config)
 {
 	/*
 	 * Overwrite previous file, write the simulation params and
 	 * write data column headings.
 	 */
 
+	extern std::string OUTPUT_PATH;
 	std::fstream file;
 
-	file.open(output_path, std::ios::out);
+	file.open(OUTPUT_PATH, std::ios::out);
 	file << "";
 	file.close();
 
@@ -53,14 +54,17 @@ void append_animal_info(
 
 
 
-void append_timestep_info(int t, Simulation_Data s_data, std::string output_path)
+void append_timestep_info(int t, Simulation_Data s_data)
 {
 	/*
 	 * Write timestep info (timestep, cum pop, population, prey/predator populations)
 	 */
+
+	extern std::string OUTPUT_PATH;
+
 	std::fstream file;
 
-	file.open(output_path, std::ios::out | std::ios::app);
+	file.open(OUTPUT_PATH, std::ios::out | std::ios::app);
 	file << t << " " << s_data.id << " " << s_data.n_living << " " << s_data.n_preds << " " << s_data.n_prey << std::endl;
 	file.close();
 

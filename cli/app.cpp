@@ -13,6 +13,7 @@
 #include "../share/config.h"
 #include "app.h"
 
+std::string OUTPUT_PATH;
 
 int is_dir(const char *path)
 {
@@ -70,8 +71,8 @@ std::string create_output_path(const char* output_path)
 void run_simulation(const char* output_path_arg)
 {
 	/* Process the output path */
-	std::string output_path = create_output_path(output_path_arg);
-	std::cout << output_path << std::endl;
+	OUTPUT_PATH = create_output_path(output_path_arg);
+	std::cout << OUTPUT_PATH << std::endl;
 
 	// in shared memory:
 	bool *is_finished = new bool(false);
@@ -84,7 +85,7 @@ void run_simulation(const char* output_path_arg)
 	std::future<int> sim_exit_code_future = sim_exit_code.get_future();
 	
 	// start simulation
-	std::thread sim_thread(simulation, std::move(sim_exit_code), is_finished, current_timestep, current_population, cum_population, output_path);
+	std::thread sim_thread(simulation, std::move(sim_exit_code), is_finished, current_timestep, current_population, cum_population);
 	
 	std::map<std::string, int> config = read_config();
 	std::cout << std::endl;

@@ -257,10 +257,10 @@ void prepare_for_exit(Simulation_Data& s_data, bool* is_finished, int* cum_popul
 
 
 
-void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *current_timestep, int *current_population, int *cum_population, std::string output_path)
+void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *current_timestep, int *current_population, int *cum_population)
 {
 	std::map<std::string, int> config = read_config();	
-	create_output_files(config, output_path);
+	create_output_files(config);
 
 	Simulation_Data s_data;
 
@@ -283,7 +283,7 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 		s_data.kill_count = 0;
 		s_data.birth_count = 0;
 
-		append_timestep_info(t, s_data, output_path);
+		append_timestep_info(t, s_data);
 
 		animal_interactions(s_data, kill_list, animal_list, birth_list, config);
 		old_and_hungry(s_data, kill_list, animal_list, config);
@@ -307,14 +307,14 @@ void simulation(std::promise<int>&& sim_exit_code, bool *is_finished, int *curre
 		/* Exit early if everything is dead. */
 		if (s_data.n_living == 0)
 		{
-			append_timestep_info(t, s_data, output_path);
+			append_timestep_info(t, s_data);
 			prepare_for_exit(s_data, is_finished, cum_population);
 			sim_exit_code.set_value(2);
 			return;
 		}
 	}
 
-	append_timestep_info(*current_timestep, s_data, output_path);
+	append_timestep_info(*current_timestep, s_data);
 	
 	for (int i = 0; i < s_data.n_living; i++)
 	{

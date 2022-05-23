@@ -93,8 +93,7 @@ void simulation(
 		bool                *is_finished,
 		int                 *current_timestep,
 		int                 *current_population,
-		int                 *cum_population,
-		std::string         output_path
+		int                 *cum_population
 		);
 
 
