@@ -1,19 +1,6 @@
 
 
-all: terr-tui terrarium
-
-
-
-## terr-tui
-
-terr-tui: core/animal.o core/predator.o core/prey.o core/basic_funcs.o core/output.o core/birth.o core/simulation.o tui/main.o tui/app.o share/config.o
-	g++ -lncurses -o terr-tui core/animal.o core/predator.o core/prey.o core/basic_funcs.o core/output.o core/birth.o core/simulation.o tui/main.o tui/app.o share/config.o
-
-tui/main.o: tui/main.cpp
-	g++ -c -o tui/main.o tui/main.cpp
-
-tui/app.o: tui/app.cpp
-	g++ -c -o tui/app.o tui/app.cpp
+all: terrarium
 
 
 
@@ -70,9 +57,4 @@ install:
 
 
 clean:
-	rm share/*.o
-	rm tui/*.o
-	rm cli/*.o
-	rm core/*.o
-	rm terrarium
-	rm terr-tui
+	rm share/*.o cli/*.o core/*.o terrarium
